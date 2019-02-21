@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	
+
 	"github.com/lib/pq"
 	"github.com/reiver/go-pqerror"
 )
