@@ -4,7 +4,10 @@ WORKSPACE=$(shell pwd)
 all: help
 	@true
 
-test: fmt vet lint importorder staticcheck ## Runs the test suite
+deps: ## Installs deps
+	go get ./...
+
+test: deps fmt vet lint importorder staticcheck ## Runs the test suite
 	go test -v -tags=int -race ./...
 
 vet: ## Verifies all code passes a 'go vet'
