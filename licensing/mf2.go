@@ -19,6 +19,20 @@ type LicenseMF2 struct {
 	LicenseGeneratedAt time.Time `json:"license_generated_at"`
 	// LicenseGenerationHost is the hostname of the server where the license was generated
 	LicenseGenerationHost string `json:"license_generation_host"`
+	// LicenseHost is the host for the licensing server
+	LicenseHost string `json:"license_host"`
+	// UsageHost is the url for the usage server
+	UsageHost string `json:"usage_host"`
+	// PublicKey is the public key used to secure communications with the GrayMeta
+	// LicenseHost and UsageHost
+	PublicKey string `json:"public_key"`
+	// PrivateKey is the private key used to secure communications with the GrayMeta
+	// LicenseHost and UsageHost
+	PrivateKey string `json:"private_key"`
+	// RemoteUsageEnabled is the flag to turn on/off remote usage reporting
+	RemoteUsageEnabled bool `json:"remote_usage_enabled"`
+	// LicenseChecksEnabled is the flag to turn on/off remote kill/licensing checks
+	LicenseChecksEnabled bool `json:"license_checks_enabled"`
 }
 
 // ExpiresAt returns the license expiration time
