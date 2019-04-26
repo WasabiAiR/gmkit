@@ -22,7 +22,7 @@ func IsExpired(l License) bool {
 }
 
 // Sign signs a license and returns the base32 encoded license key
-func Sign(privateKey string, l License) (string, error) {
+func Sign(privateKey string, l interface{}) (string, error) {
 	b, err := json.Marshal(l)
 	if err != nil {
 		return "", errors.Wrap(err, "marshaling json")
@@ -43,8 +43,8 @@ func Sign(privateKey string, l License) (string, error) {
 }
 
 // LicenseFromKey takes a licenseKey and a public key and rehydrates it into a
-// the destination License
-func LicenseFromKey(licenseKey, publicKey string, dest License) error {
+// the destination.
+func LicenseFromKey(licenseKey, publicKey string, dest interface{}) error {
 	key, err := lk.PublicKeyFromB32String(publicKey)
 	if err != nil {
 		return errors.Wrap(err, "unpacking base32 public key")

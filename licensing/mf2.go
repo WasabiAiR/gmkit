@@ -1,8 +1,25 @@
 package licensing
 
-import "time"
+import (
+	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
 
-// LicenseMF2 is a GraymMeta/Curio Platform License
+	"github.com/pkg/errors"
+)
+
+// Canonical HTTP header names for the HMAC key ID and signature headers
+const (
+	HTTPHeaderKeyID     = "X-Graymeta-Key-Id"
+	HTTPHeaderSignature = "X-Graymeta-Signature"
+)
+
+// LicenseMF2 is a GrayMeta/Curio Platform License
 type LicenseMF2 struct {
 	// Expiration is the timestamp at which the license expires
 	Expiration time.Time `json:"expiration"`
@@ -38,4 +55,89 @@ type LicenseMF2 struct {
 // ExpiresAt returns the license expiration time
 func (l LicenseMF2) ExpiresAt() time.Time {
 	return l.Expiration
+}
+
+// Pinger gets a new Pinger for this license. The licensePublicKey is the public
+// key used to sign the mf2 licenses themselves.
+func (l LicenseMF2) Pinger(client Doer, licensePublicKey string) *PingerMF2 {
+	return &PingerMF2{
+		client:           client,
+		license:          l,
+		licensePublicKey: licensePublicKey,
+	}
+}
+
+// PingResponseMF2 is the response body from the license server
+type PingResponseMF2 struct {
+	Enabled bool `json:"enabled"`
+}
+
+// PingRequestMF2 is the request body for a license ping
+type PingRequestMF2 struct {
+	CurrentTime time.Time `json:"current_time"`
+}
+
+// EnvelopePingResponse wraps the signed ping response from the server
+type EnvelopePingResponse struct {
+	Payload string `json:"payload"`
+}
+
+// Doer is an abstraction around a http client.
+type Doer interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
+// PingerMF2 executes ping requests to the MF2 license server
+type PingerMF2 struct {
+	client           Doer
+	license          LicenseMF2
+	licensePublicKey string
+}
+
+// Ping initiates a ping request to the remote license server
+func (p PingerMF2) Ping() (PingResponseMF2, error) {
+	bodyBytes, err := json.Marshal(PingRequestMF2{CurrentTime: time.Now()})
+	if err != nil {
+		return PingResponseMF2{}, errors.Wrap(err, "marshaling request body")
+	}
+
+	// namespace the ping url with the app name (mf2) in case we ever have to add
+	// another product and want to reuse this single licensing server
+	url := fmt.Sprintf("https://%s/mf2/ping", p.license.LicenseHost)
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(bodyBytes))
+	if err != nil {
+		return PingResponseMF2{}, errors.Wrap(err, "constructing request")
+	}
+
+	// sign the request, add the HTTP headers
+	mac := hmac.New(sha256.New, []byte(p.license.PrivateKey))
+	mac.Write([]byte(bodyBytes))
+	req.Header.Set(HTTPHeaderKeyID, p.license.PublicKey)
+	req.Header.Set(HTTPHeaderSignature, base64.StdEncoding.EncodeToString(mac.Sum(nil)))
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return PingResponseMF2{}, errors.Wrap(err, "executing request")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return PingResponseMF2{}, errors.Errorf("non-200 status received: %d", resp.StatusCode)
+	}
+
+	var envelope EnvelopePingResponse
+	if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
+		return PingResponseMF2{}, errors.Wrap(err, "decoding envelope")
+	}
+
+	// Validate the signature of the response. The payload inside the envelope is
+	// signed with the license private key (that only Graymeta has access to). This
+	// guarantees that the response came from a Graymeta server and not a spoofed
+	// license server.
+	var pingResponse PingResponseMF2
+	if err := LicenseFromKey(envelope.Payload, p.licensePublicKey, &pingResponse); err != nil {
+		return PingResponseMF2{}, errors.Wrap(err, "extracting signed content into response")
+	}
+
+	return pingResponse, nil
 }
