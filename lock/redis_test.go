@@ -36,6 +36,38 @@ func TestRedisLocker(t *testing.T) {
 		require.True(t, result)
 	})
 
+	t.Run("refresh lock", func(t *testing.T) {
+		pool := redis.Setup(t)
+		defer pool.Close()
+		l := NewRedisLocker(pool, "somePrefix:")
+
+		result, err := l.Lock(name, "host1", expiration)
+		require.NoError(t, err)
+		require.True(t, result)
+
+		result, err = l.Lock(name, "host2", expiration)
+		require.NoError(t, err)
+		require.False(t, result)
+
+		// set the lock again, this time 3x the expiration
+		result, err = l.Lock(name, "host1", 3*expiration)
+		require.NoError(t, err)
+		require.True(t, result)
+
+		time.Sleep(100*time.Millisecond + expiration)
+
+		// should not be able to get the lock
+		result, err = l.Lock(name, "host2", expiration)
+		require.NoError(t, err)
+		require.False(t, result)
+
+		// should be able to get the lock now
+		time.Sleep(2 * expiration)
+		result, err = l.Lock(name, "host2", expiration)
+		require.NoError(t, err)
+		require.True(t, result)
+	})
+
 	t.Run("unlock", func(t *testing.T) {
 		pool := redis.Setup(t)
 		defer pool.Close()
