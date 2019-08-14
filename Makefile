@@ -39,9 +39,10 @@ staticcheck: ## runs staticcheck on our packages
 containertest:  ## The job run by Jenkins on each pull request
 	docker run \
 		-v $(WORKSPACE):/mnt/src/github.com/graymeta/gmkit \
+		-v $(WORKSPACE)/build/run.sh:/run.sh \
 		--cap-add SYS_ADMIN \
 		builder-metafarm \
-	/bin/bash -c "cd /mnt/src/github.com/graymeta/gmkit; PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
+	/bin/bash -c "/run.sh; cd /mnt/src/github.com/graymeta/gmkit; PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
