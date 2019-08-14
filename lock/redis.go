@@ -26,20 +26,22 @@ func NewRedisLocker(pool *redis.Pool, prefix string) *RedisLocker {
 
 // Lock attempts to acquire the lock. Returns true if the lock was acquired.
 func (l *RedisLocker) Lock(name, uniqueID string, duration time.Duration) (bool, error) {
+	const lockScript = `
+  	if redis.call("get",KEYS[1]) == ARGV[1] then
+		return redis.call('SET', KEYS[1], ARGV[1], 'PX', ARGV[2])
+    else
+		return redis.call('SET', KEYS[1], ARGV[1], 'NX', 'PX', ARGV[2])
+	end`
+
 	conn := l.pool.Get()
 	defer conn.Close()
 
-	_, err := redis.String(conn.Do("SET", l.key(name), uniqueID, "NX", "PX", fmt.Sprintf("%d", duration/time.Millisecond)))
+	cmd := redis.NewScript(1, lockScript)
+	res, err := cmd.Do(conn, l.key(name), uniqueID, fmt.Sprintf("%d", duration/time.Millisecond))
 	if err != nil {
-		if err == redis.ErrNil {
-			// lock was not acquired
-			return false, nil
-		}
 		return false, err
 	}
-
-	// lock acquired
-	return true, nil
+	return res == "OK", nil
 }
 
 // ErrUnlock is the error thrown when you try to unlock a lock that's expired or
