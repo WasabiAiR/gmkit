@@ -14,7 +14,6 @@ import (
 type Client struct {
 	cfg        *Config
 	httpClient *http.Client
-	tlsConfig  *tls.Config
 }
 
 // Client checks and applies the config and return a icinga client

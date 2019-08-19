@@ -92,6 +92,7 @@ func TestSetNotificationsFailed(t *testing.T) {
 
 	is := is.New(t)
 	ic, err := icingaCfg.Client()
+	is.NoErr(err)
 
 	err = ic.SetAllNotifications("client1.example.com", true)
 	is.Err(err)
