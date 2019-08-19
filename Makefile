@@ -41,7 +41,7 @@ containertest:  ## The job run by Jenkins on each pull request
 		-v $(WORKSPACE)/build/run.sh:/run.sh \
 		--cap-add SYS_ADMIN \
 		builder-metafarm \
-	/bin/bash -c "/run.sh; cd /mnt/src/$(pkg_path); PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
+	/bin/bash -c "/run.sh; cd /mnt/src/$(pkg_path); GO111MODULE=on PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
