@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/aws/aws-sdk-go/service/ses/sesiface"
 	"github.com/pkg/errors"
 )
 
@@ -36,10 +37,15 @@ func New(accessKeyID, secretKey, region string) (notification.Sender, error) {
 
 // Sender is an SES based sender
 type Sender struct {
-	sess *ses.SES
+	sess sesiface.SESAPI
 }
 
 var _ notification.Sender = (*Sender)(nil)
+
+// GetSES returns the SES service so it can be used elsewhere.
+func (c *Sender) GetSES() sesiface.SESAPI {
+	return c.sess
+}
 
 // Send atempts to send the message.
 func (c *Sender) Send(msg notification.Message) error {
