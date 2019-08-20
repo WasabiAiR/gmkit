@@ -1,7 +1,13 @@
 SHELL=/bin/bash -o pipefail
 WORKSPACE=$(shell pwd)
-
 pkg_path=github.com/graymeta/gmkit
+
+# use the GOPROXY defined in the env, otherwise point at our internal proxy.
+ifndef GOPROXY
+	go_proxy = https://gomods.graymeta.com
+else
+	go_proxy = $(GOPROXY)
+endif
 
 all: help
 	@true
@@ -17,7 +23,7 @@ importorder: ## Verifies all code has correct import orders (stdlib, internal, 3
 
 # once the codebase is all lintable, we can replace the for loop below with this command:
 lint: ## Runs golint on all the code
-	golint -set_exit_status `go list $(pkg_path)/... | grep -v github.com/graymeta/gmkit/postgres`
+	golint -set_exit_status `go list $(pkg_path)/... | grep -v $(pkg_path)/postgres`
 
 fmt: ## Verifies all code is gofmt'ed
 	@STATUS=0 ; \
@@ -41,7 +47,7 @@ containertest:  ## The job run by Jenkins on each pull request
 		-v $(WORKSPACE)/build/run.sh:/run.sh \
 		--cap-add SYS_ADMIN \
 		builder-metafarm \
-	/bin/bash -c "/run.sh; cd /mnt/src/$(pkg_path); GO111MODULE=on PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
+	/bin/bash -c "/run.sh; cd /mnt/src/$(pkg_path); GO111MODULE=on GOPROXY=$(go_proxy) PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
 
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
