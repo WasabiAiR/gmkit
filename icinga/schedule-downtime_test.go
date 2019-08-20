@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetDowntimeSuccess(t *testing.T) {
@@ -43,21 +43,20 @@ func TestSetDowntimeSuccess(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetDowntime("client1.example.com", "Host", "test-author", "Test comment", time.Now(), time.Now().Add(time.Second*30))
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetAllDowntime("client1.example.com", "test-author", "Test comment", time.Now(), time.Now().Add(time.Second*30))
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.ResetDowntime("client1.example.com", "Host")
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.ResetAllDowntime("client1.example.com")
-	is.NoErr(err)
+	require.NoError(t, err)
 }
 
 func TestSetDowntimeFailed(t *testing.T) {
@@ -94,19 +93,18 @@ func TestSetDowntimeFailed(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetDowntime("client1.example.com", "Host", "test-author", "Test comment", time.Now(), time.Now().Add(time.Second*30))
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SetAllDowntime("client1.example.com", "test-author", "Test comment", time.Now(), time.Now().Add(time.Second*30))
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.ResetDowntime("client1.example.com", "Host")
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.ResetAllDowntime("client1.example.com")
-	is.Err(err)
+	require.Error(t, err)
 }

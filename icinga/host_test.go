@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHostExistSuccess(t *testing.T) {
@@ -40,13 +40,12 @@ func TestHostExistSuccess(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	result, err := ic.HostExist("client1.example.com")
-	is.NoErr(err)
-	is.True(result)
+	require.NoError(t, err)
+	require.True(t, result)
 }
 
 func TestHostExistFailure(t *testing.T) {
@@ -70,11 +69,10 @@ func TestHostExistFailure(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	result, err := ic.HostExist("client1.example.com")
-	is.NoErr(err)
-	is.False(result)
+	require.NoError(t, err)
+	require.False(t, result)
 }

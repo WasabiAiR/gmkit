@@ -3,7 +3,7 @@ package icinga
 import (
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClientBad(t *testing.T) {
@@ -14,9 +14,8 @@ func TestClientBad(t *testing.T) {
 		TLSCACert:     "Bogus",
 	}
 
-	is := is.New(t)
 	_, err := icingaCfg.Client()
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestClientBadBase(t *testing.T) {
@@ -27,9 +26,8 @@ func TestClientBadBase(t *testing.T) {
 		TLSCACert:     "Bogus",
 	}
 
-	is := is.New(t)
 	_, err := icingaCfg.Client()
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestClientBadAuth(t *testing.T) {
@@ -42,7 +40,6 @@ func TestClientBadAuth(t *testing.T) {
 		Password:      "",
 	}
 
-	is := is.New(t)
 	_, err := icingaCfg.Client()
-	is.Err(err)
+	require.Error(t, err)
 }

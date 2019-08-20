@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetNotificationsSuccess(t *testing.T) {
@@ -42,18 +42,17 @@ func TestSetNotificationsSuccess(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetAllNotifications("client1.example.com", true)
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetNotifications("client1.example.com", "/objects/services", true)
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SendNotification(`host.name=="cleint1"`, "Host", "jjs", "test", true)
-	is.NoErr(err)
+	require.NoError(t, err)
 }
 
 func TestSetNotificationsFailed(t *testing.T) {
@@ -90,18 +89,17 @@ func TestSetNotificationsFailed(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetAllNotifications("client1.example.com", true)
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SetNotifications("client1.example.com", "/objects/services", true)
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SendNotification(`host.name=="cleint1"`, "Host", "jjs", "test", true)
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestSetNotificationsEmpty(t *testing.T) {
@@ -125,16 +123,15 @@ func TestSetNotificationsEmpty(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetAllNotifications("client1.example.com", true)
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SetNotifications("client1.example.com", "/objects/services", true)
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SendNotification(`host.name=="cleint1"`, "Host", "jjs", "test", true)
-	is.Err(err)
+	require.Error(t, err)
 }

@@ -1,7 +1,6 @@
 module github.com/graymeta/gmkit
 
 require (
-	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927
 	github.com/ernesto-jimenez/httplogger v0.0.0-20150224132909-86cc44f6150a
 	github.com/garyburd/redigo v1.6.0
 	github.com/go-kit/kit v0.9.0
