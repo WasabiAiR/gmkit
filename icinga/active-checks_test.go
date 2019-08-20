@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetAllActiveChecksSuccess(t *testing.T) {
@@ -42,15 +42,14 @@ func TestSetAllActiveChecksSuccess(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetActiveChecks("client1.example.com", "/objects/services", true)
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetAllActiveChecks("client1.example.com", true)
-	is.NoErr(err)
+	require.NoError(t, err)
 }
 
 func TestSetAllActiveChecksFailed(t *testing.T) {
@@ -87,15 +86,14 @@ func TestSetAllActiveChecksFailed(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetActiveChecks("client1.example.com", "/objects/services", true)
-	is.Err(err)
+	require.Error(t, err)
 
 	err = ic.SetAllActiveChecks("client1.example.com", true)
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestSetAllActiveChecksEmpty(t *testing.T) {
@@ -119,10 +117,9 @@ func TestSetAllActiveChecksEmpty(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	err = ic.SetActiveChecks("client1.example.com", "/objects/services", true)
-	is.Err(err)
+	require.Error(t, err)
 }

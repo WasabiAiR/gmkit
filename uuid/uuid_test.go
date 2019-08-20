@@ -3,14 +3,11 @@ package uuid
 import (
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
-func TestUUIDok(t *testing.T) {
-	is := is.New(t)
+func TestUUID(t *testing.T) {
 	uuid, err := TimestampUUID()
-	t.Log(uuid)
-
-	is.NoErr(err)
-	is.Equal(len(uuid), 32)
+	require.NoError(t, err)
+	require.Len(t, uuid, 32)
 }

@@ -3,12 +3,10 @@ package crypto
 import (
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenerateRandomURLSafeKey(t *testing.T) {
-	is := is.New(t)
-
 	key := GenerateRandomURLSafeKey(32)
-	is.True(len(key) > 32)
+	require.True(t, len(key) > 32)
 }

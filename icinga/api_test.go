@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cheekybits/is"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAPIRequestPostSuccess(t *testing.T) {
@@ -42,12 +42,11 @@ func TestAPIRequestPostSuccess(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest(http.MethodPost, "/test", nil)
-	is.NoErr(err)
+	require.NoError(t, err)
 }
 
 func TestAPIRequestPostFailed(t *testing.T) {
@@ -84,12 +83,11 @@ func TestAPIRequestPostFailed(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest(http.MethodPost, "/test", nil)
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestAPIRequestPostNil(t *testing.T) {
@@ -113,12 +111,11 @@ func TestAPIRequestPostNil(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest(http.MethodPost, "/test", nil)
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestAPIRequestGetNil(t *testing.T) {
@@ -142,12 +139,11 @@ func TestAPIRequestGetNil(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest(http.MethodGet, "/test", nil)
-	is.NoErr(err)
+	require.NoError(t, err)
 }
 
 func TestAPIRequestHttpError(t *testing.T) {
@@ -171,12 +167,11 @@ func TestAPIRequestHttpError(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest(http.MethodPost, "/test", nil)
-	is.Err(err)
+	require.Error(t, err)
 }
 
 func TestAPIRequestDecodeError(t *testing.T) {
@@ -197,10 +192,9 @@ func TestAPIRequestDecodeError(t *testing.T) {
 		Password: "test",
 	}
 
-	is := is.New(t)
 	ic, err := icingaCfg.Client()
-	is.NoErr(err)
+	require.NoError(t, err)
 
 	_, err = ic.APIRequest("GET", "/test", nil)
-	is.Err(err)
+	require.Error(t, err)
 }
