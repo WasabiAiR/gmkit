@@ -17,6 +17,7 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/graymeta/env v0.0.2
 	github.com/gtank/cryptopasta v0.0.0-20170601214702-1f550f6f2f69
+	github.com/hashicorp/go-multierror v1.0.0
 	github.com/huandu/xstrings v1.2.0 // indirect
 	github.com/hyperboloide/lk v0.0.0-20190531110207-c022f7a15f5a
 	github.com/imdario/mergo v0.3.7 // indirect
@@ -27,6 +28,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/pkg/errors v0.8.1
+	github.com/quipo/statsd v0.0.0-20180118161217-3d6a5565f314
 	github.com/reiver/go-pqerror v0.0.0-20160209202356-63f13fe5516a
 	github.com/sendgrid/rest v2.4.1+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.5.0+incompatible
