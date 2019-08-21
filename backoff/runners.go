@@ -7,6 +7,7 @@ import (
 
 	"github.com/graymeta/gmkit/errors"
 	"github.com/graymeta/gmkit/logger"
+	"github.com/graymeta/gmkit/metrics"
 )
 
 var (
@@ -146,6 +147,7 @@ func (r Runner) Backoff(fn func() error) error {
 		if r.jitter {
 			sleep = time.Duration(rander.Int63n(int64(backoff)))
 		}
+		metrics.Incr("backoffs", 1)
 
 		time.Sleep(sleep)
 
@@ -198,6 +200,7 @@ func (r Runner) BackoffCtx(ctx context.Context, fn func(context.Context) error) 
 		if r.jitter {
 			sleep = time.Duration(rander.Int63n(int64(backoff)))
 		}
+		metrics.Incr("backoffs", 1)
 
 		select {
 		case <-ctx.Done():
