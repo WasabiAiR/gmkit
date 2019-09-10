@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +18,7 @@ type ClientErr struct {
 	op         string
 	u          url.URL
 	method     string
-	errMsg     string
+	err        error
 	respBody   string
 	reqBody    string
 	reqID      string
@@ -32,15 +33,15 @@ type ClientErr struct {
 // allow the caller to set an optional retry.
 func NewClientErr(op string, err error, resp *http.Response, opts ...ClientOptFn) error {
 	newClientErr := &ClientErr{
-		op:     op,
-		errMsg: "received unexpected response",
+		op:  op,
+		err: errors.New("received unexpected response"),
 	}
 	for _, o := range opts {
 		newClientErr = o(newClientErr)
 	}
 
 	if err != nil {
-		newClientErr.errMsg = err.Error()
+		newClientErr.err = err
 	}
 
 	if resp == nil {
@@ -80,6 +81,11 @@ func (e *ClientErr) Error() string {
 	}
 
 	return strings.Join(parts, " ")
+}
+
+// Unwrap returns the wrapped error.
+func (e *ClientErr) Unwrap() error {
+	return e.err
 }
 
 // BackoffMessage provides a condensed error message that can be consumed during
@@ -122,7 +128,7 @@ func (e *ClientErr) errorBase() string {
 		parts = append(parts, getPairPrint(e.meta))
 	}
 
-	parts = append(parts, fmt.Sprintf("err=%q", e.errMsg))
+	parts = append(parts, fmt.Sprintf("err=%q", e.err.Error()))
 
 	if e.u.String() != "" {
 		q := e.u.Query()
