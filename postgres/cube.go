@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+// Cube is a type that is used to work with the postgresql cube extension
+// which enables the use of euclidian operators on a matrix of sorts. As
+// of writing this, the only supported use case is a 1xn matrix, since
+// that is all we support in faces at the moment. For more information
+// on cube see: https://www.postgresql.org/docs/9.6/cube.html.
 type Cube []float64
 
 var (
@@ -16,6 +21,8 @@ var (
 	_ sql.Scanner   = (*Cube)(nil)
 )
 
+// Value is the cube value to convert the cube into the postgreql wire
+// protocol. It is was inspired by the github.com/lib/pq.FloatArray type.
 func (c Cube) Value() (driver.Value, error) {
 	if c == nil {
 		return nil, nil
@@ -38,6 +45,8 @@ func (c Cube) Value() (driver.Value, error) {
 	return "()", nil
 }
 
+// Scan converts the postgesql cube bytes into a valid cube type. This
+// again was inspired by github.com/lib/pq.FloatArray type.
 func (c *Cube) Scan(src interface{}) error {
 	switch src := src.(type) {
 	case []byte:

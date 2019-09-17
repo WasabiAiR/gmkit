@@ -23,7 +23,7 @@ importorder: ## Verifies all code has correct import orders (stdlib, internal, 3
 
 # once the codebase is all lintable, we can replace the for loop below with this command:
 lint: ## Runs golint on all the code
-	golint -set_exit_status `go list $(pkg_path)/... | grep -v $(pkg_path)/postgres`
+	golint -set_exit_status `go list $(pkg_path)/...`
 
 fmt: ## Verifies all code is gofmt'ed
 	@STATUS=0 ; \
