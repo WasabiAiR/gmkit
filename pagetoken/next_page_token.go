@@ -54,6 +54,16 @@ func (t Token) GetParam(key string) string {
 	return t.Params[key]
 }
 
+// GetParamAsBool returns the available value for the key provided, as a bool.
+// If none exists then false is returned.
+func (t Token) GetParamAsBool(key string) bool {
+	if t.Params == nil {
+		return false
+	}
+	val, _ := strconv.ParseBool(t.Params[key])
+	return val
+}
+
 // String implements the fmt.Stringer interfaces to get a string representation
 // of the TokenDeets.
 func (t Token) String() string {
