@@ -2,6 +2,8 @@ package httpc
 
 import (
 	"strings"
+
+	gmerrors "github.com/graymeta/gmkit/errors"
 )
 
 // RetryFn will apply a retry policy to a request.
@@ -15,10 +17,7 @@ func RetryStatus(fn StatusFn) RetryFn {
 	}
 }
 
-// RetryResponseError applies a retry on all response errors. The errors
-// typically associated with request timeouts or oauth token error.
-// This option useful when the oauth auth made me invalid or a request timeout
-// is an issue.
+// RetryResponseError sets a function to be called on all response errors.
 func RetryResponseError(fn ResponseErrorFn) RetryFn {
 	return func(r *Request) *Request {
 		r.responseErrFn = fn
@@ -46,4 +45,19 @@ func retryClientTimeout(err error) error {
 		return &retryErr{err}
 	}
 	return err
+}
+
+// makeRetrierError transforms any error into a retryErr if it doesn't exhibit
+// the gmerrors.Retrier behaviour already.
+func makeRetrierError(err error) error {
+	if _, ok := err.(gmerrors.Retrier); ok {
+		return err
+	}
+
+	return &retryErr{err}
+}
+
+// RetryResponseErrors tells the request to retry execution errors.
+func (r *Request) RetryResponseErrors() *Request {
+	return RetryResponseError(makeRetrierError)(r)
 }
