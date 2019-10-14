@@ -48,3 +48,11 @@ func WithRetryClientTimeouts() ClientOptFn {
 		return c
 	}
 }
+
+// WithRetryResponseErrors sets the response retry mechanism.
+func WithRetryResponseErrors() ClientOptFn {
+	return func(c Client) Client {
+		c.respRetryFn = makeRetrierError
+		return c
+	}
+}

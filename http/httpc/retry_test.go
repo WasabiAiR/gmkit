@@ -51,4 +51,23 @@ func TestRetryResponseErrors(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, 2, doer.DoCallCount())
 	})
+
+	t.Run("WithRetryResponseErrors", func(t *testing.T) {
+		doer := new(httpcfakes.FakeDoer)
+		doer.DoReturns(nil, errors.New("some error"))
+
+		client := New(
+			doer,
+			WithBackoff(backoff.New(backoff.MaxCalls(2))),
+			WithBaseURL(addr),
+			WithRetryResponseErrors(),
+		)
+
+		err := client.
+			GET("/foo").
+			Do(context.TODO())
+
+		require.Error(t, err)
+		require.Equal(t, 2, doer.DoCallCount())
+	})
 }
