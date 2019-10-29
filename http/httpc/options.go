@@ -56,3 +56,12 @@ func WithRetryResponseErrors() ClientOptFn {
 		return c
 	}
 }
+
+// WithResetSeekerToZero sets the seek params to zero for all future requests
+// Useful if Body param is a ReadSeeker and should be reset on retry
+func WithResetSeekerToZero() ClientOptFn {
+	return func(c Client) Client {
+		c.seekParams = &seekParams{}
+		return c
+	}
+}
