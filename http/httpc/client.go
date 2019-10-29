@@ -22,6 +22,7 @@ type Client struct {
 	respRetryFn ResponseErrorFn
 	authFn      AuthFn
 	backoff     backoff.Backoffer
+	seekParams  *seekParams
 }
 
 // New returns a new client.
@@ -84,5 +85,6 @@ func (c *Client) Req(method, addr string) *Request {
 		encodeFn:      c.encodeFn,
 		backoff:       c.backoff,
 		responseErrFn: c.respRetryFn,
+		seekParams:    c.seekParams,
 	}
 }

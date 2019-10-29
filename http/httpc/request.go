@@ -28,6 +28,11 @@ type kvPair struct {
 	value string
 }
 
+type seekParams struct {
+	offset int64
+	whence int
+}
+
 // Request is built up to create an http request.
 type Request struct {
 	method, addr string
@@ -36,6 +41,7 @@ type Request struct {
 	headers      []kvPair
 	params       []kvPair
 	logMeta      []kvPair
+	seekParams   *seekParams
 
 	authFn            AuthFn
 	encodeFn          EncodeFn
@@ -78,6 +84,23 @@ func (r *Request) ContentType(t string) *Request {
 // Decode sets the decoder func for the Request.
 func (r *Request) Decode(fn DecodeFn) *Request {
 	r.decodeFn = fn
+	return r
+}
+
+// Encode sets the encoder func for the Request.
+func (r *Request) Encode(fn EncodeFn) *Request {
+	r.encodeFn = fn
+	return r
+}
+
+// SeekParams sets the seek params.
+// this is useful in cases where the body is a seeker and needs
+// to be reset on retry
+func (r *Request) SeekParams(offset int64, whence int) *Request {
+	r.seekParams = &seekParams{
+		offset: offset,
+		whence: whence,
+	}
 	return r
 }
 
@@ -243,6 +266,9 @@ func (r *Request) getReqBody() (io.Reader, error) {
 	}
 
 	if reader, ok := r.body.(io.Reader); ok {
+		if seeker, ok2 := r.body.(io.Seeker); ok2 && r.seekParams != nil {
+			seeker.Seek(r.seekParams.offset, r.seekParams.whence)
+		}
 		return reader, nil
 	}
 
