@@ -35,8 +35,9 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/testify v1.4.0
-	github.com/stripe/stripe-go v62.1.2+incompatible
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	gopkg.in/olivere/elastic.v5 v5.0.81
 	gopkg.in/russross/blackfriday.v2 v2.0.1 // indirect
 )
+
+go 1.13
