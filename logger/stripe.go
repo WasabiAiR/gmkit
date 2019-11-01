@@ -1,18 +1,12 @@
 package logger
 
-import (
-	"fmt"
-
-	"github.com/stripe/stripe-go"
-)
+import "fmt"
 
 // StripeLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the stripe library
 type StripeLogger struct {
 	fn func(msg interface{}, keyvals ...interface{}) error
 }
-
-var _ stripe.Printfer = (*StripeLogger)(nil)
 
 // NewStripeLogger initializes a new Logger
 func NewStripeLogger(l *L, level string) *StripeLogger {
