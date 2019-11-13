@@ -12,7 +12,8 @@ import (
 func TestMulti(t *testing.T) {
 	t.Run("handles nil old error", func(t *testing.T) {
 		err := gmerrors.Append(nil, errors.New("something wrong"))
-		require.NoError(t, err)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "something wrong")
 	})
 
 	t.Run("handles nil new error", func(t *testing.T) {
