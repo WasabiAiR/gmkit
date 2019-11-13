@@ -19,11 +19,14 @@ type multiErr struct {
 
 // Append adds a new error to an existing (possibly nil) error.
 func Append(old, new error) error {
-	if old == nil {
+	if old == nil && new == nil {
 		return nil
 	}
 
 	var merr *multiErr
+	if old == nil {
+		merr = &multiErr{}
+	}
 	if !errors.As(old, &merr) {
 		merr = &multiErr{}
 		merr = Append(merr, old).(*multiErr)
