@@ -546,6 +546,30 @@ func TestClient_Req(t *testing.T) {
 		assert.Equal(t, "application/json", headers.Get("Content-Type"))
 	})
 
+	t.Run("content length", func(t *testing.T) {
+		doer := new(httpcfakes.FakeDoer)
+		doer.DoReturns(stubResp(200), nil)
+
+		client := httpc.New(doer)
+
+		buf := strings.NewReader("1234")
+		type fakeReader struct {
+			*strings.Reader
+		}
+
+		err := client.
+			POST("/foo").
+			Body(&fakeReader{Reader: buf}).
+			ContentLength(4).
+			Success(httpc.StatusOK()).
+			Do(context.TODO())
+		require.NoError(t, err)
+
+		httpReq := doer.DoArgsForCall(0)
+
+		assert.Equal(t, int64(4), httpReq.ContentLength)
+	})
+
 	t.Run("not found", func(t *testing.T) {
 		t.Run("sets not found", func(t *testing.T) {
 			doer := new(httpcfakes.FakeDoer)

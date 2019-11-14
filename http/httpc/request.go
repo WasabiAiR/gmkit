@@ -35,13 +35,14 @@ type seekParams struct {
 
 // Request is built up to create an http request.
 type Request struct {
-	method, addr string
-	doer         Doer
-	body         interface{}
-	headers      []kvPair
-	params       []kvPair
-	logMeta      []kvPair
-	seekParams   *seekParams
+	method, addr  string
+	doer          Doer
+	body          interface{}
+	headers       []kvPair
+	params        []kvPair
+	logMeta       []kvPair
+	seekParams    *seekParams
+	contentLength int
 
 	authFn            AuthFn
 	encodeFn          EncodeFn
@@ -73,6 +74,12 @@ func (r *Request) Backoff(b backoff.Backoffer) *Request {
 // Body sets the body of the Request.
 func (r *Request) Body(v interface{}) *Request {
 	r.body = v
+	return r
+}
+
+// ContentLength sets the content length on the request.
+func (r *Request) ContentLength(t int) *Request {
+	r.contentLength = t
 	return r
 }
 
@@ -220,6 +227,10 @@ func (r *Request) do(ctx context.Context) error {
 
 	if r.authFn != nil {
 		req = r.authFn(req)
+	}
+
+	if r.contentLength > 0 {
+		req.ContentLength = int64(r.contentLength)
 	}
 
 	resp, err := r.doer.Do(req)
