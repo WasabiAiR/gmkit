@@ -1,6 +1,6 @@
 module github.com/graymeta/gmkit
 
-replace gopkg.in/russross/blackfriday.v2 v2.0.1 => github.com/russross/blackfriday/v2 v2.0.1
+replace gopkg.in/russross/blackfriday.v2 => github.com/russross/blackfriday/v2 v2.0.1
 
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
@@ -37,7 +37,6 @@ require (
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	gopkg.in/olivere/elastic.v5 v5.0.81
-	gopkg.in/russross/blackfriday.v2 v2.0.1 // indirect
 )
 
 go 1.13
