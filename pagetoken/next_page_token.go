@@ -44,6 +44,22 @@ func (t Token) NextToken(numRecords, totalRecords int) string {
 	newToken := t
 	newToken.Offset += numRecords
 	return newToken.String()
+
+}
+
+// PreviousToken generates a new token from existing token for the previous page of results.
+func (t Token) PreviousToken() string {
+	if t.Offset == 0 {
+		return ""
+	}
+
+	newToken := t
+	newToken.Offset -= t.Limit
+	if newToken.Offset < 0 {
+		newToken.Offset = 0
+	}
+
+	return newToken.String()
 }
 
 // GetParam returns the available value for the key provided. If none exists then "" is returned.
