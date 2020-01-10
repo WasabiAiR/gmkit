@@ -243,6 +243,41 @@ func Test_GetTokenDeets(t *testing.T) {
 			t.Run(tt.name, fn)
 		}
 	})
+
+	t.Run("prev token", func(t *testing.T) {
+		tests := []struct {
+			description    string
+			inputOffset    int
+			inputLimit     int
+			expectedToken  bool
+			expectedOffset int
+			expectedLimit  int
+		}{
+			{"normal", 20, 10, true, 10, 10},
+			{"first page", 0, 10, false, 0, 0},
+			{"offset becomes less than 0", 5, 10, true, 0, 10},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.description, func(t *testing.T) {
+				tok := Token{
+					Offset: tt.inputOffset,
+					Limit:  tt.inputLimit,
+				}
+
+				prevStr := tok.PreviousToken()
+				if !tt.expectedToken {
+					assert.Equal(t, "", prevStr)
+					return
+				}
+
+				assert.NotEqual(t, "", prevStr)
+				prevTok := GetToken(prevStr)
+				assert.Equal(t, tt.expectedOffset, prevTok.Offset)
+				assert.Equal(t, tt.expectedLimit, prevTok.Limit)
+			})
+		}
+	})
 }
 
 func Test_GetTokenFromQuery(t *testing.T) {
