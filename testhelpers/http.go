@@ -57,9 +57,9 @@ func PUT(t *testing.T, svr http.Handler, addr string, body io.Reader, assertFns 
 }
 
 // DELETE is a test utility to test a svr handles a DELETE call.
-func DELETE(t *testing.T, svr http.Handler, addr string, assertFns ...RecTestFn) {
+func DELETE(t *testing.T, svr http.Handler, addr string, body io.Reader, assertFns ...RecTestFn) {
 	t.Helper()
-	HTTP(t, svr, http.MethodDelete, addr, nil, assertFns...)
+	HTTP(t, svr, http.MethodDelete, addr, body, assertFns...)
 }
 
 // HTTP is a test utility to test a svr handles whatever call you provide it.
