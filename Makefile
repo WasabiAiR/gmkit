@@ -9,6 +9,12 @@ else
 	go_proxy = $(GOPROXY)
 endif
 
+ifndef GOPATH
+	gopkg = $(HOME)/go/pkg
+else
+	gopkg = $(GOPATH)/pkg
+endif
+
 all: help
 	@true
 
@@ -45,6 +51,7 @@ containertest:  ## The job run by Jenkins on each pull request
 	docker run \
 		-v $(WORKSPACE):/mnt/src/$(pkg_path) \
 		-v $(WORKSPACE)/build/run.sh:/run.sh \
+		-v $(gopkg):/mnt/pkg \
 		--cap-add SYS_ADMIN \
 		builder-metafarm \
 	/bin/bash -c "/run.sh; cd /mnt/src/$(pkg_path); GO111MODULE=on GOPROXY=$(go_proxy) PATH=/usr/local/go/bin:$$PATH GOPATH=/mnt make test"
