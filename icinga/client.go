@@ -74,7 +74,6 @@ func (cfg *Config) setupTLSConfig() (*tls.Config, error) {
 		RootCAs:            caCertPool,
 		InsecureSkipVerify: cfg.TLSInsecure,
 	}
-	tlsConfig.BuildNameToCertificate()
 
 	return tlsConfig, nil
 }
