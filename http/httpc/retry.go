@@ -41,7 +41,9 @@ func retryClientTimeout(err error) error {
 	// can be found in net/http/transport.go within the go src code.
 	// there is no exported type for this unfortunately.
 	reqCanceledMsg := "net/http: request canceled while waiting for connection"
-	if strings.Contains(err.Error(), reqCanceledMsg) {
+	timeoutMsg := "Client.Timeout exceeded while awaiting headers"
+	if strings.Contains(err.Error(), reqCanceledMsg) ||
+		strings.Contains(err.Error(), timeoutMsg) {
 		return &retryErr{err}
 	}
 	return err
