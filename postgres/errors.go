@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/lib/pq"
-	"github.com/reiver/go-pqerror"
+	"github.com/pkg/errors"
+	pqerror "github.com/reiver/go-pqerror"
 )
 
 // DatabaseErr provides meaningful behavior to the postgres error.
@@ -27,7 +28,7 @@ func Err(resource string, err error) error {
 		resource: resource,
 	}
 
-	if e, ok := err.(*pq.Error); ok {
+	if e, ok := errors.Cause(err).(*pq.Error); ok {
 		pg.err = e
 		return pg
 	}

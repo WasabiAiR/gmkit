@@ -30,6 +30,34 @@ func (e Equals) Clause(rb Rebinder) (string, []interface{}, error) {
 	return query, []interface{}{e.Val}, nil
 }
 
+// ByFieldEquals creates a `{field} = ?` argument for a Where clause.
+func ByFieldEquals(field string, value interface{}) Whereable {
+	return Equals{
+		Key: field,
+		Val: value,
+	}
+}
+
+// notEquals is a struct used to represent a part of a where clause
+type notEquals struct {
+	Key string
+	Val interface{}
+}
+
+// Clause prints out a sql ready statement for the Rebinder to repackage.
+func (ne notEquals) Clause(rb Rebinder) (string, []interface{}, error) {
+	query := fmt.Sprintf("%s != %s", ne.Key, rb.Rebind("?"))
+	return query, []interface{}{ne.Val}, nil
+}
+
+// ByFieldNotEquals creates a `{field} = ?` argument for a Where clause.
+func ByFieldNotEquals(field string, value interface{}) Whereable {
+	return notEquals{
+		Key: field,
+		Val: value,
+	}
+}
+
 // ToWhereClause adds WHERE prefix to a whereable's clause output if the whereable is not nil
 func ToWhereClause(rebinder Rebinder, wherable Whereable) (clause string, args []interface{}, err error) {
 	if wherable == nil {
@@ -44,6 +72,60 @@ func ToWhereClause(rebinder Rebinder, wherable Whereable) (clause string, args [
 	}
 
 	return whereClause, whereArgs, nil
+}
+
+type group struct {
+	op     string
+	wheres []Whereable
+}
+
+// Rebind makes group into a Rebinder to call the Clause() method on other
+// Whereables and maintain order abiguity (keep the ?).
+func (group) Rebind(q string) string {
+	return sqlx.Rebind(sqlx.QUESTION, q)
+}
+
+func (g group) Clause(rb Rebinder) (string, []interface{}, error) {
+	var qParts []string
+	var args []interface{}
+	for _, w := range g.wheres {
+		if w == nil {
+			continue
+		}
+		q, a, err := w.Clause(g)
+		if err != nil {
+			return "", nil, err
+		}
+		qParts = append(qParts, q)
+		args = append(args, a...)
+	}
+	query := rb.Rebind("(" + strings.Join(qParts, " "+g.op+" ") + ")")
+
+	return query, args, nil
+}
+
+// And joins multiple Whereable clauses with AND operations.
+func And(first Whereable, second Whereable, rest ...Whereable) Whereable {
+	wheres := []Whereable{first, second}
+	if len(rest) > 0 {
+		wheres = append(wheres, rest...)
+	}
+	return group{
+		op:     "AND",
+		wheres: wheres,
+	}
+}
+
+// Or joins multiple Whereable clauses with OR operations.
+func Or(first Whereable, second Whereable, rest ...Whereable) Whereable {
+	wheres := []Whereable{first, second}
+	if len(rest) > 0 {
+		wheres = append(wheres, rest...)
+	}
+	return group{
+		op:     "OR",
+		wheres: wheres,
+	}
 }
 
 // ByItemID creates a `id = ?` argument for a Where clause.
@@ -102,6 +184,14 @@ func (i In) Clause(rb Rebinder) (string, []interface{}, error) {
 		return "", nil, err
 	}
 	return rb.Rebind(query), args, nil
+}
+
+// ByFieldIn creates a `{field} = (?, ?, ...)` argument for a Where clause.
+func ByFieldIn(field string, values ...interface{}) Whereable {
+	return In{
+		Key:  field,
+		Vals: values,
+	}
 }
 
 // ByIDsIn provides a where clause with the IN syntax, matching many rows potentially.
@@ -165,9 +255,19 @@ func (q QueryOptions) Clause() string {
 	return strings.Join(opts, " ")
 }
 
+// QueryOptionTypeLimit describes a limit option type
+const QueryOptionTypeLimit = "limit"
+
+// QueryOptionTypeOffset describes an offset option type
+const QueryOptionTypeOffset = "offset"
+
+// QueryOptionTypeOrderBy describes an order by option type
+const QueryOptionTypeOrderBy = "orderBy"
+
 // QueryOption is an interface around query options that can be of and order By, Limit or Offset.
 type QueryOption interface {
 	Clause() string
+	Type() string
 	order() int
 	valid() bool
 }
@@ -178,7 +278,14 @@ type limit struct {
 
 // Clause prints out a sql ready statement for A LIMIT.
 func (l limit) Clause() string {
+	if l.val == 0 {
+		return ""
+	}
 	return fmt.Sprintf("LIMIT %d", l.val)
+}
+
+func (l limit) Type() string {
+	return QueryOptionTypeLimit
 }
 
 func (l limit) order() int {
@@ -202,7 +309,14 @@ type offset struct {
 
 // Clause prints out a sql ready statement for an OFFSET.
 func (o offset) Clause() string {
+	if o.val == 0 {
+		return ""
+	}
 	return fmt.Sprintf("OFFSET %d", o.val)
+}
+
+func (o offset) Type() string {
+	return QueryOptionTypeOffset
 }
 
 func (o offset) order() int {
@@ -227,6 +341,10 @@ type orderBy struct {
 // Clause prints out a sql ready statement for an ORDER BY.
 func (o orderBy) Clause() string {
 	return fmt.Sprintf("ORDER BY %s", strings.Join(o.vals, ", "))
+}
+
+func (o orderBy) Type() string {
+	return QueryOptionTypeOrderBy
 }
 
 func (o orderBy) order() int {
