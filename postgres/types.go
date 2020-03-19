@@ -10,10 +10,18 @@ import (
 // CRUD is a ready to go type that implements most of the basic methods
 // we use for 90%+ of our database calls.
 type CRUD interface {
+	Execer
 	Getter
 	Selecter
 	NameBinder
 	Rebinder
+	Preparer
+	Querier
+}
+
+// Preparer provides prepared statement behaviors.
+type Preparer interface {
+	PrepareContext(ctx context.Context, query string) (*sql.Stmt, error)
 }
 
 // Execer provides the exec behavior.
@@ -31,6 +39,11 @@ type ExecRebinder interface {
 // NamedExecer preforms an operating that returns an sql.Result and error.
 type NamedExecer interface {
 	NamedExecContext(ctx context.Context, query string, args interface{}) (sql.Result, error)
+}
+
+// Querier preforms an operating that returns a pointer sql.Rows and possible error.
+type Querier interface {
+	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
 }
 
 // RowQueryBinder preforms an operating that returns a pointer sql.Result.
@@ -51,7 +64,7 @@ type NamedRowQuerier interface {
 	NameBinder
 }
 
-// NamedQuerier allows you to use the named query arugments with a query.
+// NamedQuerier allows you to use the named query arguments with a query.
 type NamedQuerier interface {
 	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
 	NameBinder

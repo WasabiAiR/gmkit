@@ -1,6 +1,9 @@
 package postgres
 
-import "database/sql"
+import (
+	"database/sql"
+	"strings"
+)
 
 // ToNullString is a utility method to convert a string into a sql null string.
 // If the input string is len 0 it will set a sql.NullString with Valid false.
@@ -21,4 +24,17 @@ func ToNullFloat64(f float64) sql.NullFloat64 {
 		return sql.NullFloat64{Valid: false}
 	}
 	return sql.NullFloat64{Float64: f, Valid: true}
+}
+
+// SanitizeString removes \u0000 (null byte) characters, as PG cannot handle
+// them.
+//
+// Relevant Thread: https://www.postgresql.org/message-id/CAE37PpOn%3DMcGeokmny4tm4FTHmXSG4KydgUJemKqT9XxkrrTmg%40mail.gmail.com
+// TLDR: Postgres is written in C and uses null bytes to terminate strings. It
+// would be too much work to change across the whole codebase.
+func SanitizeString(s string) string {
+	s = strings.Replace(s, "\u0000", "", -1)  // actual character
+	s = strings.Replace(s, "\\u0000", "", -1) // encoded character
+
+	return s
 }
