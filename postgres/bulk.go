@@ -1,10 +1,6 @@
 package postgres
 
-import (
-	"context"
-
-	"github.com/jmoiron/sqlx"
-)
+import "context"
 
 // Bulker is an interface that defines the behavior a type needs to
 // implement to be bulk insert/updated into PG.
@@ -16,7 +12,7 @@ type Bulker interface {
 }
 
 // BulkInsert is a general bulk insert func that can be used to insert any valid Bulker type.
-func BulkInsert(ctx context.Context, tx *sqlx.Tx, itemsToInsert Bulker) (rowsInserted int, insertErr error) {
+func BulkInsert(ctx context.Context, tx CRUD, itemsToInsert Bulker) (rowsInserted int, insertErr error) {
 	if itemsToInsert.Len() == 0 {
 		return 0, nil
 	}
