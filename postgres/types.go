@@ -108,3 +108,9 @@ type SelectBinder interface {
 	Selecter
 	Rebinder
 }
+
+// SelectGetter combines Selecter and Getter interfaces.
+type SelectGetter interface {
+	Selecter
+	Getter
+}
