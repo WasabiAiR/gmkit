@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/matcornic/hermes"
+	"github.com/matcornic/hermes/v2"
 	"github.com/pkg/errors"
 )
 
