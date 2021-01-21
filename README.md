@@ -2,4 +2,4 @@
 
 A set of various utilities for Go.
 
-* GM Kit is licensed under the [Creative Commons Attribution 3.0 License](https://creativecommons.org/licenses/by/3.0/)
+* GM Kit is licensed under the [Apache License Version 2.0, January 2004](LICENSE)
