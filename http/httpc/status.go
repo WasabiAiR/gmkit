@@ -49,6 +49,20 @@ func StatusAccepted() StatusFn {
 	}
 }
 
+// StatusPartialContent compares the response's status code to match Status Partial Content
+func StatusPartialContent() StatusFn {
+	return func(status int) bool {
+		return http.StatusPartialContent == status
+	}
+}
+
+// StatusSuccessfulRange compares the response's status code to match Status SuccessfulRange.
+func StatusSuccessfulRange() StatusFn {
+	return func(status int) bool {
+		return 200 <= status && status <= 299
+	}
+}
+
 // StatusCreated compares the response's status code to match Status Created.
 func StatusCreated() StatusFn {
 	return func(status int) bool {

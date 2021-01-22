@@ -194,6 +194,75 @@ func (r *Request) Success(fn StatusFn) *Request {
 	return r
 }
 
+// DoAndGetReader makes the http request and does not close the body in the http.Response that is returned
+func (r *Request) DoAndGetReader(ctx context.Context) (*http.Response, error) {
+	var resp *http.Response
+	err := r.backoff.BackoffCtx(ctx, func(ctx context.Context) error {
+		body, err := r.getReqBody()
+		if err != nil {
+			return gmerrors.NewClientErr("encode body", err, nil, r.metaErrOpts()...)
+		}
+
+		req, err := http.NewRequest(r.method, r.addr, body)
+		if err != nil {
+			return gmerrors.NewClientErr("new req", err, nil, r.metaErrOpts()...)
+		}
+		req = req.WithContext(ctx)
+
+		if len(r.headers) > 0 {
+			for _, pair := range r.headers {
+				req.Header.Set(pair.key, pair.value)
+			}
+		}
+
+		if len(r.params) > 0 {
+			params := req.URL.Query()
+			for _, kv := range r.params {
+				params.Set(kv.key, kv.value)
+			}
+			req.URL.RawQuery = params.Encode()
+		}
+
+		if r.authFn != nil {
+			req = r.authFn(req)
+		}
+
+		if r.contentLength > 0 {
+			req.ContentLength = int64(r.contentLength)
+		}
+
+		resp, err = r.doer.Do(req)
+		if err != nil {
+			return r.responseErr(resp, err)
+		}
+		if r.responseHeadersFn != nil {
+			r.responseHeadersFn(resp.Header)
+		}
+
+		status := resp.StatusCode
+		if !statusMatches(status, r.successFns) {
+			defer func() {
+				drain(resp.Body)
+			}()
+			var err error
+			if r.onErrorFn != nil {
+				var buf bytes.Buffer
+				tee := io.TeeReader(resp.Body, &buf)
+				err = r.onErrorFn(tee)
+				resp.Body = ioutil.NopCloser(&buf)
+			}
+			return gmerrors.NewClientErr("status code", err, resp, r.statusErrOpts(status)...)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 // Do makes the http request and applies the backoff.
 func (r *Request) Do(ctx context.Context) error {
 	return r.backoff.BackoffCtx(ctx, r.do)
