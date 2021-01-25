@@ -1,7 +1,7 @@
 package notification
 
 import (
-	"github.com/matcornic/hermes/v2"
+	"github.com/matcornic/hermes"
 	"github.com/pkg/errors"
 )
 
