@@ -47,7 +47,7 @@ func (c Cube) Value() (driver.Value, error) {
 
 // Scan converts the postgesql cube bytes into a valid cube type. This
 // again was inspired by github.com/lib/pq.FloatArray type.
-func (c *Cube) Scan(src interface{}) error {
+func (c *Cube) Scan(src any) error {
 	switch src := src.(type) {
 	case []byte:
 		return c.scanBytes(src)

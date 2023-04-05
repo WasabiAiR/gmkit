@@ -3,7 +3,7 @@ package logger
 // NSQLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the go-nsq library
 type NSQLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg any, keyvals ...any) error
 }
 
 // NewNSQLogger initializes a new Logger

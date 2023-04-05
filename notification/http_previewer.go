@@ -2,13 +2,13 @@ package notification
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/matcornic/hermes"
-	"github.com/pkg/errors"
 )
 
 // DefaultPreviewer is the default previewer.
@@ -55,14 +55,14 @@ func (p *Previewer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (p *Previewer) emailPreviewList(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.New("").Parse(tmplList)
 	if err != nil {
-		log.Println(errors.Wrap(err, "parsing template"))
+		log.Println(fmt.Errorf("parsing template: %w", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, p); err != nil {
-		log.Println(errors.Wrap(err, "executing template"))
+		log.Println(fmt.Errorf("executing template: %w", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -85,7 +85,7 @@ func (p *Previewer) emailPreview(w http.ResponseWriter, r *http.Request) {
 
 	txt, html, err := p.Renderer.Render(email)
 	if err != nil {
-		log.Println(errors.Wrap(err, "rendering email template"))
+		log.Println(fmt.Errorf("rendering email template: %w", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

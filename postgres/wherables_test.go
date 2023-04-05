@@ -14,7 +14,7 @@ func TestWherables(t *testing.T) {
 	tests := []struct {
 		name          string
 		expectedQuery string
-		expectedArgs  []interface{}
+		expectedArgs  []any
 		whereable     postgres.Whereable
 	}{
 		{
@@ -26,55 +26,55 @@ func TestWherables(t *testing.T) {
 		{
 			"ByFieldEquals",
 			"WHERE test = $1",
-			[]interface{}{"test"},
+			[]any{"test"},
 			postgres.ByFieldEquals("test", "test"),
 		},
 		{
 			"ByItemID",
 			"WHERE item_id = $1",
-			[]interface{}{"test"},
+			[]any{"test"},
 			postgres.ByItemID("test"),
 		},
 		{
 			"ByID",
 			"WHERE id = $1",
-			[]interface{}{"test"},
+			[]any{"test"},
 			postgres.ByID("test"),
 		},
 		{
 			"ByLocationID",
 			"WHERE location_id = $1",
-			[]interface{}{"test"},
+			[]any{"test"},
 			postgres.ByLocationID("test"),
 		},
 		{
 			"In",
 			"WHERE test IN ($1, $2, $3)",
-			[]interface{}{"one", "two", "three"},
+			[]any{"one", "two", "three"},
 			postgres.ByFieldIn("test", "one", "two", "three"),
 		},
 		{
 			"ByIDsIn",
 			"WHERE id IN ($1, $2, $3)",
-			[]interface{}{"one", "two", "three"},
+			[]any{"one", "two", "three"},
 			postgres.ByIDsIn("one", "two", "three"),
 		},
 		{
 			"ByItemIDsIn",
 			"WHERE item_id IN ($1, $2, $3)",
-			[]interface{}{"one", "two", "three"},
+			[]any{"one", "two", "three"},
 			postgres.ByItemIDsIn("one", "two", "three"),
 		},
 		{
 			"Like",
 			"WHERE test LIKE $1",
-			[]interface{}{"test"},
+			[]any{"test"},
 			postgres.Like("test", "test"),
 		},
 		{
 			"And",
 			"WHERE (id = $1 AND item_id = $2)",
-			[]interface{}{"one", "two"},
+			[]any{"one", "two"},
 			postgres.And(
 				postgres.ByID("one"),
 				postgres.ByItemID("two"),
@@ -83,7 +83,7 @@ func TestWherables(t *testing.T) {
 		{
 			"Or",
 			"WHERE (id = $1 OR item_id = $2)",
-			[]interface{}{"one", "two"},
+			[]any{"one", "two"},
 			postgres.Or(
 				postgres.ByID("one"),
 				postgres.ByItemID("two"),
@@ -92,7 +92,7 @@ func TestWherables(t *testing.T) {
 		{
 			"And and Or",
 			"WHERE (id = $1 AND (item_id = $2 OR item_id = $3))",
-			[]interface{}{"one", "two", "three"},
+			[]any{"one", "two", "three"},
 			postgres.And(
 				postgres.ByID("one"),
 				postgres.Or(

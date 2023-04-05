@@ -1,11 +1,10 @@
 package testhelpers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"github.com/pkg/errors"
 )
 
 // WorkDir creates a new temporary working directory while storing
@@ -22,17 +21,17 @@ func NewWorkingDir() (*WorkDir, error) {
 
 	twd.tmp, err = ioutil.TempDir("", "")
 	if err != nil {
-		return nil, errors.Wrap(err, "creating directory")
+		return nil, fmt.Errorf("creating directory: %w", err)
 	}
 
 	twd.cwd, err = os.Getwd()
 	if err != nil {
-		return nil, errors.Wrap(err, "getting current wd")
+		return nil, fmt.Errorf("getting current wd: %w", err)
 	}
 
 	err = os.Chdir(twd.tmp)
 	if err != nil {
-		return nil, errors.Wrap(err, "changing cwd")
+		return nil, fmt.Errorf("changing cwd: %w", err)
 	}
 
 	return twd, nil

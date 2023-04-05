@@ -2,9 +2,10 @@ package crypter
 
 import (
 	"encoding/base64"
+	"errors"
+	"fmt"
 
 	"github.com/gtank/cryptopasta"
-	"github.com/pkg/errors"
 )
 
 // ErrInvalidAESKeyLength is the error returned when the encryption key isn't
@@ -42,12 +43,12 @@ func (c *aesCrypter) Encrypt(data string) (string, error) {
 func (c *aesCrypter) Decrypt(ciphertext string) (string, error) {
 	unencoded, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
-		return "", errors.Wrap(err, "decoding base64 ciphertext")
+		return "", fmt.Errorf("decoding base64 ciphertext: %w", err)
 	}
 
 	plaintext, err := cryptopasta.Decrypt([]byte(unencoded), c.key)
 	if err != nil {
-		return "", errors.Wrap(err, "decrypting ciphertext")
+		return "", fmt.Errorf("decrypting ciphertext: %w", err)
 	}
 
 	return string(plaintext), nil

@@ -10,7 +10,7 @@ import (
 
 // LoggingClient is a client that dumps stats to a Logger
 type LoggingClient struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg any, keyvals ...any) error
 }
 
 // NewLoggingClient creates a new logging client that will log to logger

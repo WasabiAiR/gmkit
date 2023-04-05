@@ -1,11 +1,10 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var (
@@ -30,12 +29,12 @@ func ParseHeaderRange(h string) (int64, int64, error) {
 
 	start, err := strconv.ParseInt(pieces[0], 10, 64)
 	if err != nil {
-		return 0, 0, errors.Wrap(err, "parsing start value")
+		return 0, 0, fmt.Errorf("parsing start value: %w", err)
 	}
 
 	end, err := strconv.ParseInt(pieces[1], 10, 64)
 	if err != nil {
-		return 0, 0, errors.Wrap(err, "parsing end value")
+		return 0, 0, fmt.Errorf("parsing end value: %w", err)
 	}
 
 	return start, end, nil

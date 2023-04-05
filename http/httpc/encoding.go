@@ -9,7 +9,7 @@ import (
 
 type (
 	// EncodeFn is an encoder func.
-	EncodeFn func(interface{}) (io.Reader, error)
+	EncodeFn func(any) (io.Reader, error)
 
 	// DecodeFn is a decoder func.
 	DecodeFn func(r io.Reader) error
@@ -17,14 +17,14 @@ type (
 
 // JSONEncode sets the client's encodeFn to a json encoder.
 func JSONEncode() EncodeFn {
-	return func(v interface{}) (io.Reader, error) {
+	return func(v any) (io.Reader, error) {
 		var buf bytes.Buffer
 		return &buf, json.NewEncoder(&buf).Encode(v)
 	}
 }
 
 // JSONDecode sets the client's decodeFn to a json decoder.
-func JSONDecode(v interface{}) DecodeFn {
+func JSONDecode(v any) DecodeFn {
 	return func(r io.Reader) error {
 		return json.NewDecoder(r).Decode(v)
 	}
@@ -32,14 +32,14 @@ func JSONDecode(v interface{}) DecodeFn {
 
 // GobEncode sets the client's encodeFn to a gob encoder.
 func GobEncode() EncodeFn {
-	return func(v interface{}) (io.Reader, error) {
+	return func(v any) (io.Reader, error) {
 		var buf bytes.Buffer
 		return &buf, gob.NewEncoder(&buf).Encode(v)
 	}
 }
 
 // GobDecode sets the client's decodeFn to a gob decoder.
-func GobDecode(v interface{}) DecodeFn {
+func GobDecode(v any) DecodeFn {
 	return func(r io.Reader) error {
 		return gob.NewDecoder(r).Decode(v)
 	}

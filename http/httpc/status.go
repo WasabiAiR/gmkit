@@ -1,6 +1,8 @@
 package httpc
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // StatusFn is func for comparing expected status code against
 // an expected status code.

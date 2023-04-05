@@ -3,14 +3,13 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
 	gmerrors "github.com/graymeta/gmkit/errors"
 	"github.com/graymeta/gmkit/http/middleware"
 	"github.com/graymeta/gmkit/logger"
-
-	"github.com/pkg/errors"
 )
 
 // Responder writes API responses.
@@ -49,7 +48,7 @@ func Header(key, value string) Option {
 const HeaderAPIVersion = `X-Api-Version`
 
 // With responds with the specified data.
-func (r *Responder) With(w http.ResponseWriter, req *http.Request, status int, data interface{}, opts ...Option) {
+func (r *Responder) With(w http.ResponseWriter, req *http.Request, status int, data any, opts ...Option) {
 	var buf bytes.Buffer
 	// cannot write to buf if data is nil, in case of StatusNoContent, this write will fail
 	// so we need an escape hatch here.
@@ -58,7 +57,7 @@ func (r *Responder) With(w http.ResponseWriter, req *http.Request, status int, d
 		enc.SetIndent("", "\t")
 		err := enc.Encode(data)
 		if err != nil {
-			err = errors.Wrap(err, "failed to encode response object")
+			err = fmt.Errorf("failed to encode response object: %w", err)
 			r.Err(w, req, err)
 			return
 		}
@@ -74,7 +73,7 @@ func (r *Responder) With(w http.ResponseWriter, req *http.Request, status int, d
 	}
 	w.WriteHeader(status)
 	if _, err := io.Copy(w, &buf); err != nil {
-		err = errors.Wrap(err, "failed to copy response bytes")
+		err = fmt.Errorf("failed to copy response bytes: %w", err)
 		r.log.Err("api_response", err)
 	}
 }

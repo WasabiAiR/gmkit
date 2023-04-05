@@ -10,7 +10,7 @@ import (
 
 // Whereable is a way of creating a functional query statement for different lookups.
 type Whereable interface {
-	Clause(rebinder Rebinder) (query string, args []interface{}, err error)
+	Clause(rebinder Rebinder) (query string, args []any, err error)
 }
 
 // All provides a nil that indicates no Where clause is provided.
@@ -21,17 +21,17 @@ func All() Whereable {
 // Equals is a struct used to represent a part of a where clause
 type Equals struct {
 	Key string
-	Val interface{}
+	Val any
 }
 
 // Clause prints out a sql ready statement for the Rebinder to repackage.
-func (e Equals) Clause(rb Rebinder) (string, []interface{}, error) {
+func (e Equals) Clause(rb Rebinder) (string, []any, error) {
 	query := fmt.Sprintf("%s = %s", e.Key, rb.Rebind("?"))
-	return query, []interface{}{e.Val}, nil
+	return query, []any{e.Val}, nil
 }
 
 // ByFieldEquals creates a `{field} = ?` argument for a Where clause.
-func ByFieldEquals(field string, value interface{}) Whereable {
+func ByFieldEquals(field string, value any) Whereable {
 	return Equals{
 		Key: field,
 		Val: value,
@@ -41,17 +41,17 @@ func ByFieldEquals(field string, value interface{}) Whereable {
 // notEquals is a struct used to represent a part of a where clause
 type notEquals struct {
 	Key string
-	Val interface{}
+	Val any
 }
 
 // Clause prints out a sql ready statement for the Rebinder to repackage.
-func (ne notEquals) Clause(rb Rebinder) (string, []interface{}, error) {
+func (ne notEquals) Clause(rb Rebinder) (string, []any, error) {
 	query := fmt.Sprintf("%s != %s", ne.Key, rb.Rebind("?"))
-	return query, []interface{}{ne.Val}, nil
+	return query, []any{ne.Val}, nil
 }
 
 // ByFieldNotEquals creates a `{field} = ?` argument for a Where clause.
-func ByFieldNotEquals(field string, value interface{}) Whereable {
+func ByFieldNotEquals(field string, value any) Whereable {
 	return notEquals{
 		Key: field,
 		Val: value,
@@ -59,7 +59,7 @@ func ByFieldNotEquals(field string, value interface{}) Whereable {
 }
 
 // ToWhereClause adds WHERE prefix to a whereable's clause output if the whereable is not nil
-func ToWhereClause(rebinder Rebinder, wherable Whereable) (clause string, args []interface{}, err error) {
+func ToWhereClause(rebinder Rebinder, wherable Whereable) (clause string, args []any, err error) {
 	if wherable == nil {
 		return "", nil, nil
 	}
@@ -85,9 +85,9 @@ func (group) Rebind(q string) string {
 	return sqlx.Rebind(sqlx.QUESTION, q)
 }
 
-func (g group) Clause(rb Rebinder) (string, []interface{}, error) {
+func (g group) Clause(rb Rebinder) (string, []any, error) {
 	var qParts []string
-	var args []interface{}
+	var args []any
 	for _, w := range g.wheres {
 		if w == nil {
 			continue
@@ -129,7 +129,7 @@ func Or(first Whereable, second Whereable, rest ...Whereable) Whereable {
 }
 
 // ByItemID creates a `id = ?` argument for a Where clause.
-func ByItemID(id interface{}) Whereable {
+func ByItemID(id any) Whereable {
 	return Equals{
 		Key: "item_id",
 		Val: id,
@@ -137,7 +137,7 @@ func ByItemID(id interface{}) Whereable {
 }
 
 // ByID creates a `id = ?` argument for a Where clause.
-func ByID(id interface{}) Whereable {
+func ByID(id any) Whereable {
 	return Equals{
 		Key: "id",
 		Val: id,
@@ -145,7 +145,7 @@ func ByID(id interface{}) Whereable {
 }
 
 // ByLocationID creates a `location_id = ?` arugment for a Where clause.
-func ByLocationID(id interface{}) Whereable {
+func ByLocationID(id any) Whereable {
 	return Equals{
 		Key: "location_id",
 		Val: id,
@@ -154,10 +154,10 @@ func ByLocationID(id interface{}) Whereable {
 
 type is struct {
 	key string
-	val interface{}
+	val any
 }
 
-func (i is) Clause(rb Rebinder) (string, []interface{}, error) {
+func (i is) Clause(rb Rebinder) (string, []any, error) {
 	query := fmt.Sprintf("%s IS %s", i.key, i.val)
 	return query, nil, nil
 }
@@ -173,11 +173,11 @@ func IDsNotNull() Whereable {
 // In is a struct used to represent an IN clause
 type In struct {
 	Key  string
-	Vals []interface{}
+	Vals []any
 }
 
 // Clause prints out a sql ready statement for the Rebinder to repackage.
-func (i In) Clause(rb Rebinder) (string, []interface{}, error) {
+func (i In) Clause(rb Rebinder) (string, []any, error) {
 	query := fmt.Sprintf("%s IN (?)", i.Key)
 	query, args, err := sqlx.In(query, i.Vals)
 	if err != nil {
@@ -187,7 +187,7 @@ func (i In) Clause(rb Rebinder) (string, []interface{}, error) {
 }
 
 // ByFieldIn creates a `{field} = (?, ?, ...)` argument for a Where clause.
-func ByFieldIn(field string, values ...interface{}) Whereable {
+func ByFieldIn(field string, values ...any) Whereable {
 	return In{
 		Key:  field,
 		Vals: values,
@@ -196,7 +196,7 @@ func ByFieldIn(field string, values ...interface{}) Whereable {
 
 // ByIDsIn provides a where clause with the IN syntax, matching many rows potentially.
 func ByIDsIn(ids ...string) Whereable {
-	var vals []interface{}
+	var vals []any
 	for _, id := range ids {
 		vals = append(vals, id)
 	}
@@ -208,7 +208,7 @@ func ByIDsIn(ids ...string) Whereable {
 
 // ByItemIDsIn provides a where clause with the IN syntax, matching many rows potentially.
 func ByItemIDsIn(ids ...string) Whereable {
-	var vals []interface{}
+	var vals []any
 	for _, id := range ids {
 		vals = append(vals, id)
 	}
@@ -220,12 +220,12 @@ func ByItemIDsIn(ids ...string) Whereable {
 
 type like struct {
 	key string
-	val interface{}
+	val any
 }
 
-func (l like) Clause(rb Rebinder) (string, []interface{}, error) {
+func (l like) Clause(rb Rebinder) (string, []any, error) {
 	query := fmt.Sprintf("%s LIKE %s", l.key, rb.Rebind("?"))
-	return query, []interface{}{l.val}, nil
+	return query, []any{l.val}, nil
 }
 
 // Like creates a where clause that uses a like matcher.

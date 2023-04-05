@@ -2,9 +2,8 @@ package icinga
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // ActiveCheck Basic body to disable active check on a host
@@ -19,11 +18,11 @@ type ActiveCheck struct {
 func (c *Client) SetAllActiveChecks(hostname string, check bool) error {
 	err := c.SetActiveChecks(hostname, "/objects/hosts", check)
 	if err != nil {
-		return errors.Wrap(err, "SetActiveCheck on host")
+		return fmt.Errorf("SetActiveCheck on host: %w", err)
 	}
 	err = c.SetActiveChecks(hostname, "/objects/services", check)
 	if err != nil {
-		return errors.Wrap(err, "SetActiveCheck on services")
+		return fmt.Errorf("SetActiveCheck on services: %w", err)
 	}
 	return nil
 }

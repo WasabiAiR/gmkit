@@ -1,6 +1,8 @@
 package metrics
 
-import "time"
+import (
+	"time"
+)
 
 // Timer returns a function which returns an int64 that represents the difference
 // in time between Time being called and the returning function being called

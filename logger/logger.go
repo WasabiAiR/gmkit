@@ -60,7 +60,7 @@ type L struct {
 }
 
 // New initializes a new logger. If w is nil, logs will be sent to stdout.
-func New(w io.Writer, name, level string, keyvals ...interface{}) *L {
+func New(w io.Writer, name, level string, keyvals ...any) *L {
 	if w == nil {
 		w = os.Stdout
 	}
@@ -84,7 +84,7 @@ func New(w io.Writer, name, level string, keyvals ...interface{}) *L {
 // Caller returns a log.Valuer that returns a file and line from a specified depth
 // in the callstack.
 func caller(depth int) log.Valuer {
-	return func() interface{} {
+	return func() any {
 		c := stack.Caller(depth)
 		// The format string here has special meaning. See
 		// https://godoc.org/github.com/go-stack/stack#Call.Format
@@ -102,7 +102,7 @@ func (l *L) New(name string) *L {
 }
 
 // With returns a logger with the keyvals appended to the existing logger
-func (l *L) With(keyvals ...interface{}) *L {
+func (l *L) With(keyvals ...any) *L {
 	return &L{
 		src:    l.src,
 		Level:  l.Level,
@@ -111,28 +111,28 @@ func (l *L) With(keyvals ...interface{}) *L {
 }
 
 // Debug logs a message at the debug level
-func (l *L) Debug(msg interface{}, keyvals ...interface{}) error {
+func (l *L) Debug(msg any, keyvals ...any) error {
 	return l.log(Debug, log.With(l.logger, "src", l.source(), "level", Debug.String(), "msg", msg), keyvals...)
 }
 
 // Info logs a message at the info level
-func (l *L) Info(msg interface{}, keyvals ...interface{}) error {
+func (l *L) Info(msg any, keyvals ...any) error {
 	return l.log(Info, log.With(l.logger, "src", l.source(), "level", Info.String(), "msg", msg), keyvals...)
 }
 
 // Warn logs a message at the warning level
-func (l *L) Warn(msg interface{}, keyvals ...interface{}) error {
+func (l *L) Warn(msg any, keyvals ...any) error {
 	return l.log(Warn, log.With(l.logger, "src", l.source(), "level", Warn.String(), "msg", msg), keyvals...)
 }
 
 // Err logs a message at the error level
-func (l *L) Err(msg interface{}, keyvals ...interface{}) error {
+func (l *L) Err(msg any, keyvals ...any) error {
 	return l.log(Err, log.With(l.logger, "src", l.source(), "level", Err.String(), "msg", msg), keyvals...)
 }
 
 // Fatal logs a message at the fatal level and also exits the program by calling
 // os.Exit
-func (l *L) Fatal(msg interface{}, keyvals ...interface{}) {
+func (l *L) Fatal(msg any, keyvals ...any) {
 	l.log(Fatal, log.With(l.logger, "src", l.source(), "level", Fatal.String(), "msg", msg), keyvals...)
 	os.Exit(1)
 }
@@ -141,7 +141,7 @@ func (l *L) source() string {
 	return strings.Join(l.src, ".")
 }
 
-func (l *L) log(level Level, lvl log.Logger, keyvals ...interface{}) error {
+func (l *L) log(level Level, lvl log.Logger, keyvals ...any) error {
 	if l == nil {
 		return nil
 	}

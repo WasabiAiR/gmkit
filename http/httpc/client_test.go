@@ -1104,7 +1104,7 @@ type foo struct {
 	Method string
 }
 
-func stubRespNBody(t *testing.T, status int, v interface{}) *http.Response {
+func stubRespNBody(t *testing.T, status int, v any) *http.Response {
 	t.Helper()
 
 	var buf bytes.Buffer

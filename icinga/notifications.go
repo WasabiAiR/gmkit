@@ -2,9 +2,8 @@ package icinga
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // Notifications Basic body to disable notifications for a host or service
@@ -19,11 +18,11 @@ type Notifications struct {
 func (c *Client) SetAllNotifications(hostname string, check bool) error {
 	err := c.SetNotifications(hostname, "/objects/hosts", check)
 	if err != nil {
-		return errors.Wrap(err, "SetNotifications on host")
+		return fmt.Errorf("SetNotifications on host: %w", err)
 	}
 	err = c.SetNotifications(hostname, "/objects/services", check)
 	if err != nil {
-		return errors.Wrap(err, "SetNotifications on services")
+		return fmt.Errorf("SetNotifications on services: %w", err)
 	}
 	return nil
 }

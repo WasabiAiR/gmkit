@@ -3,6 +3,7 @@ package testhelpers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -11,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -172,14 +172,14 @@ func Do(t *testing.T, method, addr string, body io.Reader) *http.Response {
 	t.Helper()
 
 	req, err := http.NewRequest(method, addr, body)
-	require.NoError(t, errors.Wrap(err, "new request"))
+	require.NoError(t, fmt.Errorf("new request: %w", err))
 
 	client := http.Client{
 		Timeout: 2 * time.Second,
 	}
 
 	resp, err := client.Do(req)
-	require.NoError(t, errors.Wrap(err, "do"))
+	require.NoError(t, fmt.Errorf("do: %w", err))
 
 	return resp
 }
@@ -198,7 +198,7 @@ func GetURL(t *testing.T, addr string) *url.URL {
 // EncodeBody is a helper func for encoding a type into an bytes.Buffer type.
 // Can be used for a response body or whatever else. The returned buffer can
 // be written or read from as needed.
-func EncodeBody(t *testing.T, v interface{}) *bytes.Buffer {
+func EncodeBody(t *testing.T, v any) *bytes.Buffer {
 	t.Helper()
 
 	var buf bytes.Buffer
@@ -210,7 +210,7 @@ func EncodeBody(t *testing.T, v interface{}) *bytes.Buffer {
 
 // DecodeBody is a helper for decoding an io.reader (i.e. response body)
 // into the destination type (v).
-func DecodeBody(t *testing.T, r io.Reader, v interface{}) {
+func DecodeBody(t *testing.T, r io.Reader, v any) {
 	t.Helper()
 
 	if err := json.NewDecoder(r).Decode(v); err != nil {
@@ -219,7 +219,7 @@ func DecodeBody(t *testing.T, r io.Reader, v interface{}) {
 }
 
 // JSONPrettyPrint pretty prints a json body in all its glory.
-func JSONPrettyPrint(t *testing.T, v interface{}) {
+func JSONPrettyPrint(t *testing.T, v any) {
 	t.Helper()
 
 	b, err := json.MarshalIndent(v, "", "\t")

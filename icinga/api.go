@@ -3,9 +3,9 @@ package icinga
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // APIResults response from icinga API
@@ -20,7 +20,7 @@ type APIResults struct {
 		Name   string   `json:"name"`
 		Type   string   `json:"type"`
 		Attrs  struct {
-			AttrsInfo map[string]interface{} `json:"-,"`
+			AttrsInfo map[string]any `json:"-,"`
 		} `json:"attrs"`
 		Joins struct{} `json:"joins"`
 		Meta  struct{} `json:"meta"`
@@ -61,7 +61,7 @@ func (c *Client) APIRequest(method, APICall string, jsonString []byte) (APIResul
 
 	// On http failure return results
 	if !(response.StatusCode >= 200 && response.StatusCode <= 299) {
-		return results, errors.Errorf("HTTP Status code: %d results: %v", response.StatusCode, results.Results)
+		return results, fmt.Errorf("HTTP Status code: %d results: %v", response.StatusCode, results.Results)
 	}
 
 	// If the results is empty and GET means object does not exists.  If other method means no changes took affect

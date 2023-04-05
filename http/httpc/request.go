@@ -37,7 +37,7 @@ type seekParams struct {
 type Request struct {
 	method, addr  string
 	doer          Doer
-	body          interface{}
+	body          any
 	headers       []kvPair
 	params        []kvPair
 	logMeta       []kvPair
@@ -72,7 +72,7 @@ func (r *Request) Backoff(b backoff.Backoffer) *Request {
 }
 
 // Body sets the body of the Request.
-func (r *Request) Body(v interface{}) *Request {
+func (r *Request) Body(v any) *Request {
 	r.body = v
 	return r
 }
@@ -112,7 +112,7 @@ func (r *Request) SeekParams(offset int64, whence int) *Request {
 }
 
 // DecodeJSON is is a short hand for decoding to JSON.
-func (r *Request) DecodeJSON(v interface{}) *Request {
+func (r *Request) DecodeJSON(v any) *Request {
 	return r.Decode(JSONDecode(v))
 }
 

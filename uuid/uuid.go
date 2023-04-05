@@ -10,10 +10,9 @@ import (
 // TimestampUUID generates timestamp UUID, 32 bits are a timestamp in hexadecimal and 96 random
 // for example:
 //
-//   56d43a23c379031f51b2bb406b8703dc
-//   --------|-----------------------
-//     time   			random
-//
+//	56d43a23c379031f51b2bb406b8703dc
+//	--------|-----------------------
+//	  time   			random
 func TimestampUUID() (string, error) {
 	now := uint32(time.Now().UTC().Unix())
 	b := make([]byte, 12)

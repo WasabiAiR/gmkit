@@ -2,10 +2,9 @@ package icinga
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // ScheduleDowntime Basic body to schedule downtime for a host
@@ -22,11 +21,11 @@ type ScheduleDowntime struct {
 func (c *Client) SetAllDowntime(hostname, author, comment string, start, end time.Time) error {
 	err := c.SetDowntime(hostname, "Host", author, comment, start, end)
 	if err != nil {
-		return errors.Wrap(err, "SetAllDowntime on host")
+		return fmt.Errorf("SetAllDowntime on host: %w", err)
 	}
 	err = c.SetDowntime(hostname, "Service", author, comment, start, end)
 	if err != nil {
-		return errors.Wrap(err, "SetAllDowntime on services")
+		return fmt.Errorf("SetAllDowntime on services: %w", err)
 	}
 	return nil
 }
@@ -65,11 +64,11 @@ type ResetDowntime struct {
 func (c *Client) ResetAllDowntime(hostname string) error {
 	err := c.ResetDowntime(hostname, "Host")
 	if err != nil {
-		return errors.Wrap(err, "ResetAllDowntime on host")
+		return fmt.Errorf("ResetAllDowntime on host: %w", err)
 	}
 	err = c.ResetDowntime(hostname, "Service")
 	if err != nil {
-		return errors.Wrap(err, "ResetAllDowntime on services")
+		return fmt.Errorf("ResetAllDowntime on services: %w", err)
 	}
 	return nil
 }

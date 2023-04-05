@@ -26,7 +26,7 @@ type Preparer interface {
 
 // Execer provides the exec behavior.
 type Execer interface {
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
 // ExecRebinder is an interface that is agnostic for database transactions for the
@@ -38,35 +38,35 @@ type ExecRebinder interface {
 
 // NamedExecer preforms an operating that returns an sql.Result and error.
 type NamedExecer interface {
-	NamedExecContext(ctx context.Context, query string, args interface{}) (sql.Result, error)
+	NamedExecContext(ctx context.Context, query string, args any) (sql.Result, error)
 }
 
 // Querier preforms an operating that returns a pointer sql.Rows and possible error.
 type Querier interface {
-	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
+	QueryxContext(ctx context.Context, query string, args ...any) (*sqlx.Rows, error)
 }
 
 // RowQueryBinder preforms an operating that returns a pointer sql.Result.
 type RowQueryBinder interface {
-	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
+	QueryRowxContext(ctx context.Context, query string, args ...any) *sqlx.Row
 	Rebinder
 }
 
 // QueryBinder preforms an operating that returns a pointer sql.Result.
 type QueryBinder interface {
-	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
+	QueryxContext(ctx context.Context, query string, args ...any) (*sqlx.Rows, error)
 	Rebinder
 }
 
 // NamedRowQuerier allows you to use the named query arguments with a row query.
 type NamedRowQuerier interface {
-	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
+	QueryRowxContext(ctx context.Context, query string, args ...any) *sqlx.Row
 	NameBinder
 }
 
 // NamedQuerier allows you to use the named query arguments with a query.
 type NamedQuerier interface {
-	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
+	QueryxContext(ctx context.Context, query string, args ...any) (*sqlx.Rows, error)
 	NameBinder
 }
 
@@ -79,7 +79,7 @@ type NamedGetBinder interface {
 
 // Getter provides get functionality.
 type Getter interface {
-	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	GetContext(ctx context.Context, dest any, query string, args ...any) error
 }
 
 // GetRebinder provides the get and rebinding functionality.
@@ -90,7 +90,7 @@ type GetRebinder interface {
 
 // NameBinder preforms an operating that returns a pointer sql.Result.
 type NameBinder interface {
-	BindNamed(query string, v interface{}) (bindedQuery string, args []interface{}, err error)
+	BindNamed(query string, v any) (bindedQuery string, args []any, err error)
 }
 
 // Rebinder preforms a strings altering operation.
@@ -100,7 +100,7 @@ type Rebinder interface {
 
 // Selecter performs select behavior with contexts.
 type Selecter interface {
-	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	SelectContext(ctx context.Context, dest any, query string, args ...any) error
 }
 
 // SelectBinder preforms a query with a context.
