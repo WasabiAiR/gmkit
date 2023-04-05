@@ -5,8 +5,8 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -61,7 +61,7 @@ func (cfg *Config) setupTLSConfig() (*tls.Config, error) {
 	}
 
 	// Load CA cert
-	caCert, err := ioutil.ReadFile(cfg.TLSCACert)
+	caCert, err := os.ReadFile(cfg.TLSCACert)
 	if err != nil {
 		return nil, fmt.Errorf("Read ca cert: %w", err)
 	}

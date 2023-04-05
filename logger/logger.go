@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -160,5 +159,5 @@ func Default() *L {
 // Silence returns a logger that writes everything to /dev/null. Useful for
 // silencing log output from tests
 func Silence() *L {
-	return New(ioutil.Discard, "discard", "")
+	return New(io.Discard, "discard", "")
 }

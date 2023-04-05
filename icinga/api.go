@@ -61,7 +61,7 @@ func (c *Client) APIRequest(method, APICall string, jsonString []byte) (APIResul
 
 	// On http failure return results
 	if !(response.StatusCode >= 200 && response.StatusCode <= 299) {
-		return results, fmt.Errorf("HTTP Status code: %d results: %v", response.StatusCode, results.Results)
+		return results, fmt.Errorf("http status code: %d results: %v", response.StatusCode, results.Results)
 	}
 
 	// If the results is empty and GET means object does not exists.  If other method means no changes took affect
@@ -69,7 +69,7 @@ func (c *Client) APIRequest(method, APICall string, jsonString []byte) (APIResul
 		if method == http.MethodGet {
 			return results, nil
 		}
-		return results, errors.New("Icinga API results is empty")
+		return results, errors.New("icinga API results is empty")
 	}
 	results.Exists = true
 
@@ -77,7 +77,7 @@ func (c *Client) APIRequest(method, APICall string, jsonString []byte) (APIResul
 	if method != http.MethodGet {
 		for _, result := range results.Results {
 			if result.Code != 200 {
-				return results, errors.New("Icinga API error on one of the results")
+				return results, errors.New("icinga API error on one of the results")
 			}
 		}
 	}

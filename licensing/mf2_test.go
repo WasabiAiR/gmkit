@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -27,7 +27,7 @@ func TestPingerMF2(t *testing.T) {
 			require.Len(t, keyID, 32)
 			require.NotEqual(t, "", sig)
 
-			body, err := ioutil.ReadAll(r.Body)
+			body, err := io.ReadAll(r.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -49,7 +49,7 @@ func TestPingerMF2(t *testing.T) {
 			require.NoError(t, err)
 
 			return &http.Response{
-				Body:       ioutil.NopCloser(bytes.NewReader(b)),
+				Body:       io.NopCloser(bytes.NewReader(b)),
 				StatusCode: http.StatusOK,
 			}, nil
 		},
