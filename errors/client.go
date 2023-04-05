@@ -3,7 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -53,7 +53,7 @@ func NewClientErr(op string, err error, resp *http.Response, opts ...ClientOptFn
 		newClientErr.method = req.Method
 
 		if req.Header != nil && strings.Contains(req.Header.Get("Content-Type"), "application/json") {
-			if body, err := ioutil.ReadAll(req.Body); err == nil {
+			if body, err := io.ReadAll(req.Body); err == nil {
 				newClientErr.respBody = string(body)
 			}
 		}
@@ -61,7 +61,7 @@ func NewClientErr(op string, err error, resp *http.Response, opts ...ClientOptFn
 	newClientErr.StatusCode = resp.StatusCode
 	newClientErr.reqID = resp.Header.Get(middleware.RequestHeader)
 
-	if body, err := ioutil.ReadAll(resp.Body); err == nil {
+	if body, err := io.ReadAll(resp.Body); err == nil {
 		newClientErr.respBody = string(body)
 	}
 

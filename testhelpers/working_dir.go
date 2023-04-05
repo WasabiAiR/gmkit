@@ -2,7 +2,6 @@ package testhelpers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -19,10 +18,7 @@ func NewWorkingDir() (*WorkDir, error) {
 	twd := &WorkDir{}
 	var err error
 
-	twd.tmp, err = ioutil.TempDir("", "")
-	if err != nil {
-		return nil, fmt.Errorf("creating directory: %w", err)
-	}
+	twd.tmp = os.TempDir()
 
 	twd.cwd, err = os.Getwd()
 	if err != nil {

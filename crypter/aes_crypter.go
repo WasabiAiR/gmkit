@@ -10,7 +10,7 @@ import (
 
 // ErrInvalidAESKeyLength is the error returned when the encryption key isn't
 // the correct length
-var ErrInvalidAESKeyLength = errors.New("Invalid key length")
+var ErrInvalidAESKeyLength = errors.New("invalid key length")
 
 type aesCrypter struct {
 	key *[32]byte

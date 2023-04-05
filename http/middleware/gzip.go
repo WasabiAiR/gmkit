@@ -17,11 +17,6 @@ func (gzw gzipWriter) Write(b []byte) (int, error) {
 }
 
 func (gzw gzipWriter) WriterHeader(statusCode int) {
-	// gzw.w.Close() (gzip writer) will write a footer even if no data has been written.
-	// StatusNotModified and StatusNoContent expect an empty body so swap for generic ResponseWriter instead
-	if statusCode == http.StatusNoContent || statusCode == http.StatusNotModified {
-		gzw.w = gzw.ResponseWriter
-	}
 	gzw.ResponseWriter.WriteHeader(statusCode)
 }
 

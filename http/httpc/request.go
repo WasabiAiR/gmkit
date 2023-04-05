@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/graymeta/gmkit/backoff"
@@ -249,7 +248,7 @@ func (r *Request) DoAndGetReader(ctx context.Context) (*http.Response, error) {
 				var buf bytes.Buffer
 				tee := io.TeeReader(resp.Body, &buf)
 				err = r.onErrorFn(tee)
-				resp.Body = ioutil.NopCloser(&buf)
+				resp.Body = io.NopCloser(&buf)
 			}
 			return gmerrors.NewClientErr("status code", err, resp, r.statusErrOpts(status)...)
 		}
@@ -320,7 +319,7 @@ func (r *Request) do(ctx context.Context) error {
 			var buf bytes.Buffer
 			tee := io.TeeReader(resp.Body, &buf)
 			err = r.onErrorFn(tee)
-			resp.Body = ioutil.NopCloser(&buf)
+			resp.Body = io.NopCloser(&buf)
 		}
 		return gmerrors.NewClientErr("status code", err, resp, r.statusErrOpts(status)...)
 	}
@@ -416,7 +415,7 @@ func toKVPairs(pairs []string) []kvPair {
 
 // drain reads everything from the ReadCloser and closes it
 func drain(r io.ReadCloser) error {
-	if _, err := io.Copy(ioutil.Discard, r); err != nil {
+	if _, err := io.Copy(io.Discard, r); err != nil {
 		return err
 	}
 	return r.Close()

@@ -36,7 +36,6 @@ func BulkInsert(ctx context.Context, tx CRUD, itemsToInsert Bulker) (rowsInserte
 			return 0, Err(itemsToInsert.TableName(), err)
 		}
 	}
-	idsMap = nil
 
 	if _, err := stmt.ExecContext(ctx); err != nil {
 		return 0, Err(itemsToInsert.TableName(), err)
