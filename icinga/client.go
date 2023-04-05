@@ -63,7 +63,7 @@ func (cfg *Config) setupTLSConfig() (*tls.Config, error) {
 	// Load CA cert
 	caCert, err := os.ReadFile(cfg.TLSCACert)
 	if err != nil {
-		return nil, fmt.Errorf("Read ca cert: %w", err)
+		return nil, fmt.Errorf("read ca cert: %w", err)
 	}
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
