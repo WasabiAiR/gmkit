@@ -3,9 +3,9 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 )
 
 // NewTx creates a new database transaction with default isolation levels and
@@ -29,7 +29,7 @@ func Commit(tx *sqlx.Tx, resource string) error {
 // Rollback undoes the supplied transaction.
 func Rollback(tx *sqlx.Tx, resource string, err error) error {
 	if commitErr := tx.Rollback(); commitErr != nil {
-		return errors.Wrap(err, Err(resource, commitErr).Error())
+		return fmt.Errorf(Err(resource, commitErr).Error()+": %w", err)
 	}
 	return err
 }

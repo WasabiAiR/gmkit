@@ -2,10 +2,11 @@ package licensing
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/hyperboloide/lk"
-	"github.com/pkg/errors"
 )
 
 // ErrLicenseInvalidSignature is the error returned when the license has an invalid signature
@@ -22,47 +23,51 @@ func IsExpired(l License) bool {
 }
 
 // Sign signs a license and returns the base32 encoded license key
-func Sign(privateKey string, l interface{}) (string, error) {
+func Sign(privateKey string, l any) (string, error) {
 	b, err := json.Marshal(l)
 	if err != nil {
-		return "", errors.Wrap(err, "marshaling json")
+		return "", fmt.Errorf("marshaling json: %w", err)
 	}
 
 	key, err := lk.PrivateKeyFromB32String(privateKey)
 	if err != nil {
-		return "", errors.Wrap(err, "unmarshaling key")
+		return "", fmt.Errorf("unmarshaling key: %w", err)
 	}
 
 	lic, err := lk.NewLicense(key, b)
 	if err != nil {
-		return "", errors.Wrap(err, "generating license")
+		return "", fmt.Errorf("generating license: %w", err)
 	}
 
 	licenseB32, err := lic.ToB32String()
-	return licenseB32, errors.Wrap(err, "transforming license to base32 string")
+	if err != nil {
+		return "", fmt.Errorf("transforming license to base32 string: %w", err)
+	}
+
+	return licenseB32, nil
 }
 
 // LicenseFromKey takes a licenseKey and a public key and rehydrates it into a
 // the destination.
-func LicenseFromKey(licenseKey, publicKey string, dest interface{}) error {
+func LicenseFromKey(licenseKey, publicKey string, dest any) error {
 	key, err := lk.PublicKeyFromB32String(publicKey)
 	if err != nil {
-		return errors.Wrap(err, "unpacking base32 public key")
+		return fmt.Errorf("unpacking base32 public key: %w", err)
 	}
 
 	license, err := lk.LicenseFromB32String(licenseKey)
 	if err != nil {
-		return errors.Wrap(err, "unmarshalling license from b32 string")
+		return fmt.Errorf("unmarshalling license from b32 string: %w", err)
 	}
 
 	if ok, err := license.Verify(key); err != nil {
-		return errors.Wrap(err, "verifying license")
+		return fmt.Errorf("verifying license: %w", err)
 	} else if !ok {
 		return ErrLicenseInvalidSignature
 	}
 
 	if err := json.Unmarshal(license.Data, &dest); err != nil {
-		return errors.Wrap(err, "unmarshaling license payload json")
+		return fmt.Errorf("unmarshaling license payload json: %w", err)
 	}
 	return nil
 }

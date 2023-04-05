@@ -18,19 +18,19 @@ var _ Doer = &DoerMock{}
 
 // DoerMock is a mock implementation of Doer.
 //
-//     func TestSomethingThatUsesDoer(t *testing.T) {
+//	    func TestSomethingThatUsesDoer(t *testing.T) {
 //
-//         // make and configure a mocked Doer
-//         mockedDoer := &DoerMock{
-//             DoFunc: func(in1 *http.Request) (*http.Response, error) {
-// 	               panic("mock out the Do method")
-//             },
-//         }
+//	        // make and configure a mocked Doer
+//	        mockedDoer := &DoerMock{
+//	            DoFunc: func(in1 *http.Request) (*http.Response, error) {
+//		               panic("mock out the Do method")
+//	            },
+//	        }
 //
-//         // use mockedDoer in code that requires Doer
-//         // and then make assertions.
+//	        // use mockedDoer in code that requires Doer
+//	        // and then make assertions.
 //
-//     }
+//	    }
 type DoerMock struct {
 	// DoFunc mocks the Do method.
 	DoFunc func(in1 *http.Request) (*http.Response, error)
@@ -63,7 +63,8 @@ func (mock *DoerMock) Do(in1 *http.Request) (*http.Response, error) {
 
 // DoCalls gets all the calls that were made to Do.
 // Check the length with:
-//     len(mockedDoer.DoCalls())
+//
+//	len(mockedDoer.DoCalls())
 func (mock *DoerMock) DoCalls() []struct {
 	In1 *http.Request
 } {

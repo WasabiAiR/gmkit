@@ -1,6 +1,8 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	// NewExistsSVCErrGen is a generator function for building ExistsSVCErrs with the specified

@@ -1,13 +1,15 @@
 package postgres
 
-import "context"
+import (
+	"context"
+)
 
 // Bulker is an interface that defines the behavior a type needs to
 // implement to be bulk insert/updated into PG.
 type Bulker interface {
 	Len() int
 	PrepareStatement() string
-	KeyedArgsAtIndex(index int) (key string, arguments []interface{})
+	KeyedArgsAtIndex(index int) (key string, arguments []any)
 	TableName() string
 }
 
@@ -34,7 +36,6 @@ func BulkInsert(ctx context.Context, tx CRUD, itemsToInsert Bulker) (rowsInserte
 			return 0, Err(itemsToInsert.TableName(), err)
 		}
 	}
-	idsMap = nil
 
 	if _, err := stmt.ExecContext(ctx); err != nil {
 		return 0, Err(itemsToInsert.TableName(), err)

@@ -1,6 +1,8 @@
 package httpc
 
-import "github.com/graymeta/gmkit/backoff"
+import (
+	"github.com/graymeta/gmkit/backoff"
+)
 
 // ClientOptFn sets keys on a client type.
 type ClientOptFn func(Client) Client

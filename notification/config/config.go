@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"os"
 
@@ -9,8 +10,6 @@ import (
 	ses "github.com/graymeta/gmkit/notification/amazonses"
 	"github.com/graymeta/gmkit/notification/noop"
 	"github.com/graymeta/gmkit/notification/sendgrid"
-
-	"github.com/pkg/errors"
 )
 
 // Config used to setup the sender

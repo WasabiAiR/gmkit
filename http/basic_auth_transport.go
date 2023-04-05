@@ -1,6 +1,8 @@
 package http
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // BasicAuthTransport is an http.RoundTripper that adds basic auth credentials to each request.
 type BasicAuthTransport struct {

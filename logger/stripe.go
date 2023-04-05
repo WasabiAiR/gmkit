@@ -1,11 +1,13 @@
 package logger
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // StripeLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the stripe library
 type StripeLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg any, keyvals ...any) error
 }
 
 // NewStripeLogger initializes a new Logger
@@ -25,6 +27,6 @@ func NewStripeLogger(l *L, level string) *StripeLogger {
 }
 
 // Printf prints a message to the logs
-func (l *StripeLogger) Printf(format string, v ...interface{}) {
+func (l *StripeLogger) Printf(format string, v ...any) {
 	l.fn(fmt.Sprintf(format, v...))
 }

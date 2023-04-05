@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/graymeta/gmkit/notification"
-
-	"github.com/pkg/errors"
 )
 
 // Environment variable keys controlling configuration
@@ -46,27 +44,27 @@ func (c Client) Send(msg notification.Message) error {
 
 	conn, err := tls.Dial("tcp", c.host+":"+c.port, &tlsConfig)
 	if err != nil {
-		return errors.Wrap(err, "couldn't dial SMTP server")
+		return fmt.Errorf("couldn't dial SMTP server: %w", err)
 	}
 
 	smtpClient, err := smtp.NewClient(conn, c.host)
 	if err != nil {
-		return errors.Wrap(err, "cannot create new SMTP client")
+		return fmt.Errorf("cannot create new SMTP client: %w", err)
 	}
 
 	err = smtpClient.Auth(auth)
 	if err != nil {
-		return errors.Wrap(err, "cannot authenticate against SMTP server")
+		return fmt.Errorf("cannot authenticate against SMTP server: %w", err)
 	}
 
 	err = smtpClient.Mail(msg.From)
 	if err != nil {
-		return errors.Wrap(err, "preparing new mail")
+		return fmt.Errorf("preparing new mail: %w", err)
 	}
 
 	for _, r := range msg.To {
 		if err = smtpClient.Rcpt(r); err != nil {
-			return errors.Wrap(err, "setting receivers mails")
+			return fmt.Errorf("setting receivers mails: %w", err)
 		}
 	}
 
@@ -83,7 +81,7 @@ func (c Client) Send(msg notification.Message) error {
 	m := buildEmail(msg)
 
 	_, err = w.Write(m)
-	return errors.Wrap(err, "sending email")
+	return fmt.Errorf("sending email: %w", err)
 }
 
 func buildEmail(msg notification.Message) []byte {

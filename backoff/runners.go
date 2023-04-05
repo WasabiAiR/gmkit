@@ -35,10 +35,11 @@ type Runner struct {
 // New returns a runner with the defined options. If no options are given,
 // then the new runner is given the defaults for initial and max backoff as well
 // as max calls. The defaults being:
-//		InitBackoff: 1 second
-//		MaxBackoff:	 1 minute
-//		MaxCalls:	 10
-//		Jitter: 	 false
+//
+//	InitBackoff: 1 second
+//	MaxBackoff:	 1 minute
+//	MaxCalls:	 10
+//	Jitter: 	 false
 func New(opts ...RunnerOptFn) Runner {
 	r := Runner{
 		initDur:  defaultInitialBackoff,

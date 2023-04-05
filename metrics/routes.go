@@ -1,11 +1,11 @@
 package metrics
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
 
 // SanitizeRoute cleans up a route for the Gorilla Mux to be used as a metric name
@@ -41,5 +41,5 @@ func InstrumentRouter(r *mux.Router) error {
 		return nil
 	})
 
-	return errors.Wrap(err, "instrumenting router")
+	return fmt.Errorf("instrumenting router: %w", err)
 }

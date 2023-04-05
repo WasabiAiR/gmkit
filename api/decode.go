@@ -9,7 +9,7 @@ import (
 // Decode decodes the body of a request into the specified object.
 // If the object implements the OK interface, that method is called
 // to validate the object.
-func Decode(r *http.Request, v interface{}) error {
+func Decode(r *http.Request, v any) error {
 	err := json.NewDecoder(r.Body).Decode(v)
 	if err != nil {
 		return &ErrJSON{err}

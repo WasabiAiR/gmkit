@@ -62,6 +62,7 @@ func Statsd(service string) statsd.Statsd {
 type StopFunc func()
 
 // NewTimer convenience function start and publish Timing stat, typical use is:
+//
 //	stop := metrics.NewTimer("my_metric")
 //	defer stop()
 func NewTimer(name string) StopFunc {
@@ -116,6 +117,7 @@ func Range(size int64) string {
 }
 
 // NewTimerBySize convenience function start and publish Timing stat bucketed by byte size, typical use is:
+//
 //	stop := metrics.NewTimerBySize("my_metric", size)
 //	defer stop()
 func NewTimerBySize(name string, size int64) StopFunc {

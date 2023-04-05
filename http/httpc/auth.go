@@ -1,6 +1,8 @@
 package httpc
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // AuthFn adds authorization to an http request.
 type AuthFn func(*http.Request) *http.Request

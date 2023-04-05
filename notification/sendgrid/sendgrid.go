@@ -1,9 +1,10 @@
 package sendgrid
 
 import (
+	"fmt"
+
 	"github.com/graymeta/gmkit/notification"
 
-	"github.com/pkg/errors"
 	sendgridlib "github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -33,7 +34,7 @@ func (s *Sender) Send(msg notification.Message) error {
 		m := mail.NewSingleEmail(from, msg.Subject, to, msg.Body, msg.BodyHTML)
 		_, err := s.client.Send(m)
 		if err != nil {
-			return errors.Wrap(err, "sending email with SendGrid")
+			return fmt.Errorf("sending email with SendGrid: %w", err)
 		}
 	}
 	return nil

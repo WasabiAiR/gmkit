@@ -20,7 +20,7 @@ func NewElasticLogger(l *L) *ElasticLogger {
 }
 
 // Printf logs the message to the wrapped logger at the debug level
-func (el *ElasticLogger) Printf(format string, v ...interface{}) {
+func (el *ElasticLogger) Printf(format string, v ...any) {
 	// The ES library logs lots of stuff with newlines and other junk...this escapes
 	// all that so it's a single line with the message
 	el.l.Debug(fmt.Sprintf("%q", fmt.Sprintf(format, v...)))

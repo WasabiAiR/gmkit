@@ -1,13 +1,13 @@
 package logger
 
 import (
+	"errors"
 	"flag"
 	"io"
 	"log"
 	"os"
 
 	"github.com/graymeta/env"
-	"github.com/pkg/errors"
 )
 
 // Config is used to parse CLI flags related to logging
@@ -37,7 +37,7 @@ func NewConfig(flag *flag.FlagSet, appName string) *Config {
 }
 
 // Logger gets the logger
-func (cfg *Config) Logger(w io.Writer, keyvals ...interface{}) (*L, error) {
+func (cfg *Config) Logger(w io.Writer, keyvals ...any) (*L, error) {
 	if cfg.flag != nil && !cfg.flag.Parsed() {
 		return nil, errors.New("must parse flags before calling Logger")
 	}

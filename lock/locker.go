@@ -1,6 +1,8 @@
 package lock
 
-import "time"
+import (
+	"time"
+)
 
 // Locker defines the interface for the backend lock system.
 type Locker interface {

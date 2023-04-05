@@ -3,7 +3,7 @@ package middleware
 import (
 	"bytes"
 	"compress/gzip"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,7 +21,7 @@ func TestNoGzip(t *testing.T) {
 	require.NoError(t, err)
 	res, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
 	require.Equal(t, body, b)
 }
@@ -39,11 +39,11 @@ func TestGzip(t *testing.T) {
 	require.NoError(t, err)
 	h := res.Header.Get("Content-Encoding")
 	require.Contains(t, h, "gzip")
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
 	gr, err := gzip.NewReader(bytes.NewReader(b))
 	require.NoError(t, err)
-	uncompressed, err := ioutil.ReadAll(gr)
+	uncompressed, err := io.ReadAll(gr)
 	require.NoError(t, err)
 	require.Equal(t, body, uncompressed)
 	require.Less(t, len(b), len(body))
@@ -61,7 +61,7 @@ func TestNoContent(t *testing.T) {
 	require.NoError(t, err)
 	h := res.Header.Get("Content-Encoding")
 	require.Contains(t, h, "gzip")
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
 	require.Len(t, b, 0)
 }

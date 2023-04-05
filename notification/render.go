@@ -1,8 +1,9 @@
 package notification
 
 import (
+	"fmt"
+
 	"github.com/matcornic/hermes"
-	"github.com/pkg/errors"
 )
 
 // Renderer is an interface for rendering emails.
@@ -20,11 +21,11 @@ type HermesRenderer struct {
 func (r *HermesRenderer) Render(tmpl hermes.Email) (string, string, error) {
 	html, err := r.Template.GenerateHTML(tmpl)
 	if err != nil {
-		return "", "", errors.Wrap(err, "generating html email")
+		return "", "", fmt.Errorf("generating html email: %w", err)
 	}
 	text, err := r.Template.GeneratePlainText(tmpl)
 	if err != nil {
-		return "", "", errors.Wrap(err, "generating plaintext email")
+		return "", "", fmt.Errorf("generating plaintext email: %w", err)
 	}
 
 	return text, html, nil

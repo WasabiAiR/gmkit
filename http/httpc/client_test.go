@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	stderrors "errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -1104,7 +1104,7 @@ type foo struct {
 	Method string
 }
 
-func stubRespNBody(t *testing.T, status int, v interface{}) *http.Response {
+func stubRespNBody(t *testing.T, status int, v any) *http.Response {
 	t.Helper()
 
 	var buf bytes.Buffer
@@ -1113,7 +1113,7 @@ func stubRespNBody(t *testing.T, status int, v interface{}) *http.Response {
 	}
 	return &http.Response{
 		StatusCode: status,
-		Body:       ioutil.NopCloser(&buf),
+		Body:       io.NopCloser(&buf),
 	}
 }
 
@@ -1125,7 +1125,7 @@ func stubRespHeaders(status int, headers map[string]string) *http.Response {
 
 	return &http.Response{
 		StatusCode: status,
-		Body:       ioutil.NopCloser(new(bytes.Buffer)),
+		Body:       io.NopCloser(new(bytes.Buffer)),
 		Header:     respHeader,
 	}
 }
@@ -1133,7 +1133,7 @@ func stubRespHeaders(status int, headers map[string]string) *http.Response {
 func stubResp(status int) *http.Response {
 	return &http.Response{
 		StatusCode: status,
-		Body:       ioutil.NopCloser(new(bytes.Buffer)),
+		Body:       io.NopCloser(new(bytes.Buffer)),
 	}
 }
 

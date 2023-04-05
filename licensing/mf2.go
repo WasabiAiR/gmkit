@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Canonical HTTP header names for the HMAC key ID and signature headers
@@ -98,7 +96,7 @@ type PingerMF2 struct {
 func (p PingerMF2) Ping() (PingResponseMF2, error) {
 	bodyBytes, err := json.Marshal(PingRequestMF2{CurrentTime: time.Now()})
 	if err != nil {
-		return PingResponseMF2{}, errors.Wrap(err, "marshaling request body")
+		return PingResponseMF2{}, fmt.Errorf("marshaling request body: %w", err)
 	}
 
 	// namespace the ping url with the app name (mf2) in case we ever have to add
@@ -106,7 +104,7 @@ func (p PingerMF2) Ping() (PingResponseMF2, error) {
 	url := fmt.Sprintf("https://%s/mf2/ping", p.license.LicenseHost)
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return PingResponseMF2{}, errors.Wrap(err, "constructing request")
+		return PingResponseMF2{}, fmt.Errorf("constructing request: %w", err)
 	}
 
 	// sign the request, add the HTTP headers
@@ -117,17 +115,17 @@ func (p PingerMF2) Ping() (PingResponseMF2, error) {
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return PingResponseMF2{}, errors.Wrap(err, "executing request")
+		return PingResponseMF2{}, fmt.Errorf("executing request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return PingResponseMF2{}, errors.Errorf("non-200 status received: %d", resp.StatusCode)
+		return PingResponseMF2{}, fmt.Errorf("non-200 status received: %d", resp.StatusCode)
 	}
 
 	var envelope EnvelopePingResponse
 	if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
-		return PingResponseMF2{}, errors.Wrap(err, "decoding envelope")
+		return PingResponseMF2{}, fmt.Errorf("decoding envelope: %w", err)
 	}
 
 	// Validate the signature of the response. The payload inside the envelope is
@@ -136,7 +134,7 @@ func (p PingerMF2) Ping() (PingResponseMF2, error) {
 	// license server.
 	var pingResponse PingResponseMF2
 	if err := LicenseFromKey(envelope.Payload, p.licensePublicKey, &pingResponse); err != nil {
-		return PingResponseMF2{}, errors.Wrap(err, "extracting signed content into response")
+		return PingResponseMF2{}, fmt.Errorf("extracting signed content into response: %w", err)
 	}
 
 	return pingResponse, nil

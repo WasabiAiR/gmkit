@@ -3,11 +3,11 @@ package icinga
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"io/ioutil"
+	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Client holds the icinga2 http client
@@ -34,7 +34,7 @@ func (cfg *Config) Client() (*Client, error) {
 
 	tlsConfig, err := cfg.setupTLSConfig()
 	if err != nil {
-		return nil, errors.Wrap(err, "setupTLSConfig error")
+		return nil, fmt.Errorf("setupTLSConfig error: %w", err)
 	}
 
 	return &Client{
@@ -57,13 +57,13 @@ func (cfg *Config) setupTLSConfig() (*tls.Config, error) {
 	// Load client cert
 	cert, err := tls.LoadX509KeyPair(cfg.TLSClientCert, cfg.TLSClientKey)
 	if err != nil {
-		return nil, errors.Wrap(err, "load tls cert and key")
+		return nil, fmt.Errorf("load tls cert and key: %w", err)
 	}
 
 	// Load CA cert
-	caCert, err := ioutil.ReadFile(cfg.TLSCACert)
+	caCert, err := os.ReadFile(cfg.TLSCACert)
 	if err != nil {
-		return nil, errors.Wrap(err, "Read ca cert")
+		return nil, fmt.Errorf("read ca cert: %w", err)
 	}
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)

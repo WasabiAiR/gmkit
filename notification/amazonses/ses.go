@@ -1,6 +1,8 @@
 package amazonses
 
 import (
+	"fmt"
+
 	"github.com/graymeta/gmkit/notification"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -8,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/aws/aws-sdk-go/service/ses/sesiface"
-	"github.com/pkg/errors"
 )
 
 // The environment variable names for the various SES configuration keys.
@@ -28,7 +29,7 @@ func New(accessKeyID, secretKey, region string) (notification.Sender, error) {
 
 	sess, err := session.NewSession(config)
 	if err != nil {
-		return nil, errors.Wrap(err, "creating SES session")
+		return nil, fmt.Errorf("creating SES session: %w", err)
 	}
 
 	service := ses.New(sess)
@@ -78,7 +79,7 @@ func (c *Sender) Send(msg notification.Message) error {
 
 	_, err := c.sess.SendEmail(input)
 	if err != nil {
-		return errors.Wrap(err, "sending email with Amazon SES")
+		return fmt.Errorf("sending email with Amazon SES: %w", err)
 	}
 	return nil
 }

@@ -19,22 +19,22 @@ var _ Locker = &LockerMock{}
 
 // LockerMock is a mock implementation of Locker.
 //
-//     func TestSomethingThatUsesLocker(t *testing.T) {
+//	    func TestSomethingThatUsesLocker(t *testing.T) {
 //
-//         // make and configure a mocked Locker
-//         mockedLocker := &LockerMock{
-//             LockFunc: func(name string, uniqueID string, duration time.Duration) (bool, error) {
-// 	               panic("mock out the Lock method")
-//             },
-//             UnlockFunc: func(name string, uniqueID string) error {
-// 	               panic("mock out the Unlock method")
-//             },
-//         }
+//	        // make and configure a mocked Locker
+//	        mockedLocker := &LockerMock{
+//	            LockFunc: func(name string, uniqueID string, duration time.Duration) (bool, error) {
+//		               panic("mock out the Lock method")
+//	            },
+//	            UnlockFunc: func(name string, uniqueID string) error {
+//		               panic("mock out the Unlock method")
+//	            },
+//	        }
 //
-//         // use mockedLocker in code that requires Locker
-//         // and then make assertions.
+//	        // use mockedLocker in code that requires Locker
+//	        // and then make assertions.
 //
-//     }
+//	    }
 type LockerMock struct {
 	// LockFunc mocks the Lock method.
 	LockFunc func(name string, uniqueID string, duration time.Duration) (bool, error)
@@ -85,7 +85,8 @@ func (mock *LockerMock) Lock(name string, uniqueID string, duration time.Duratio
 
 // LockCalls gets all the calls that were made to Lock.
 // Check the length with:
-//     len(mockedLocker.LockCalls())
+//
+//	len(mockedLocker.LockCalls())
 func (mock *LockerMock) LockCalls() []struct {
 	Name     string
 	UniqueID string
@@ -122,7 +123,8 @@ func (mock *LockerMock) Unlock(name string, uniqueID string) error {
 
 // UnlockCalls gets all the calls that were made to Unlock.
 // Check the length with:
-//     len(mockedLocker.UnlockCalls())
+//
+//	len(mockedLocker.UnlockCalls())
 func (mock *LockerMock) UnlockCalls() []struct {
 	Name     string
 	UniqueID string

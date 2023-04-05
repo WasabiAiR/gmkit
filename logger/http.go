@@ -10,7 +10,7 @@ import (
 // HTTPLogger wraps a L and satisfys the interface required by
 // https://godoc.org/github.com/ernesto-jimenez/httplogger#HTTPLogger
 type HTTPLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg any, keyvals ...any) error
 }
 
 var _ httplogger.HTTPLogger = (*HTTPLogger)(nil)

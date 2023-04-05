@@ -104,7 +104,7 @@ func Test_GetTokenDeets(t *testing.T) {
 		tests := []struct {
 			name     string
 			params   map[string]string
-			expected map[string]interface{}
+			expected map[string]any
 		}{
 			{
 				name: "simple1",
@@ -112,7 +112,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"bool":   "true",
 					"param1": "value 1",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   true,
 					"param1": "value 1",
 				},
@@ -124,7 +124,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param1": "value 1",
 					"param2": "value 2",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   true,
 					"param1": "value 1",
 					"param2": "value 2",
@@ -138,7 +138,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param2": "value 2",
 					"param3": "value 3",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   true,
 					"param1": "value 1",
 					"param2": "value 2",
@@ -154,7 +154,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param3": "value 3",
 					"param4": "value 4",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   false,
 					"param1": "value 1",
 					"param2": "value 2",
@@ -172,7 +172,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param4": "value 4",
 					"param5": "value 5",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   false,
 					"param1": "value 1",
 					"param2": "value 2",
@@ -192,7 +192,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param5": "value 5",
 					"param6": "value 6",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   false,
 					"param1": "value 1",
 					"param2": "value 2",
@@ -209,7 +209,7 @@ func Test_GetTokenDeets(t *testing.T) {
 					"param1": "",
 					"param2": "",
 				},
-				expected: map[string]interface{}{
+				expected: map[string]any{
 					"bool":   false,
 					"param1": "",
 					"param2": "",
@@ -218,7 +218,7 @@ func Test_GetTokenDeets(t *testing.T) {
 			{
 				name:     "no Params",
 				params:   map[string]string{},
-				expected: map[string]interface{}{"bool": false},
+				expected: map[string]any{"bool": false},
 			},
 		}
 		for _, tt := range tests {
