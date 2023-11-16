@@ -67,15 +67,18 @@ func (l *L) New(name string) *L {
 	var nl L
 	nl = *l
 
-	nl = *nl.With("src", l.name+"."+name)
+	nl.l = nl.l.With("src", l.name+"."+name)
 
 	return &nl
 }
 
 // With returns a logger with the keyvals appended to the existing logger
 func (l *L) With(keyvals ...any) *L {
-	l.l = l.l.With(keyvals...)
-	return l
+	var nl L
+	nl = *l
+
+	nl.l = nl.l.With(keyvals...)
+	return &nl
 }
 
 // Debug logs a message at the debug level
