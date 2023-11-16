@@ -8,7 +8,7 @@ import (
 // StripeLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the stripe library
 type StripeLogger struct {
-	fn func(msg string, keyvals ...any)
+	fn func(msg any, keyvals ...any)
 }
 
 // NewStripeLogger initializes a new Logger

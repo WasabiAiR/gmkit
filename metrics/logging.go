@@ -11,7 +11,7 @@ import (
 
 // LoggingClient is a client that dumps stats to a Logger
 type LoggingClient struct {
-	fn func(msg string, keyvals ...interface{})
+	fn func(msg any, keyvals ...interface{})
 }
 
 var _ statsd.Statsd = (*LoggingClient)(nil)

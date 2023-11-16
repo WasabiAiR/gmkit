@@ -2,6 +2,7 @@ package logger
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -78,62 +79,62 @@ func (l *L) With(keyvals ...any) *L {
 }
 
 // Debug logs a message at the debug level
-func (l *L) Debug(msg string, keyvals ...any) {
+func (l *L) Debug(msg any, keyvals ...any) {
 	if !l.l.Enabled(context.Background(), slog.LevelDebug) {
 		return
 	}
 	var pcs [1]uintptr
 	runtime.Callers(2, pcs[:])
-	r := slog.NewRecord(time.Now(), slog.LevelDebug, msg, pcs[0])
+	r := slog.NewRecord(time.Now(), slog.LevelDebug, fmt.Sprintf("%s", msg), pcs[0])
 	r.Add(keyvals...)
 	l.l.Handler().Handle(context.Background(), r)
 }
 
 // Info logs a message at the info level
-func (l *L) Info(msg string, keyvals ...any) {
+func (l *L) Info(msg any, keyvals ...any) {
 	if !l.l.Enabled(context.Background(), slog.LevelInfo) {
 		return
 	}
 	var pcs [1]uintptr
 	runtime.Callers(2, pcs[:])
-	r := slog.NewRecord(time.Now(), slog.LevelInfo, msg, pcs[0])
+	r := slog.NewRecord(time.Now(), slog.LevelInfo, fmt.Sprintf("%s", msg), pcs[0])
 	r.Add(keyvals...)
 	l.l.Handler().Handle(context.Background(), r)
 }
 
 // Warn logs a message at the warning level
-func (l *L) Warn(msg string, keyvals ...any) {
+func (l *L) Warn(msg any, keyvals ...any) {
 	if !l.l.Enabled(context.Background(), slog.LevelWarn) {
 		return
 	}
 	var pcs [1]uintptr
 	runtime.Callers(2, pcs[:])
-	r := slog.NewRecord(time.Now(), slog.LevelWarn, msg, pcs[0])
+	r := slog.NewRecord(time.Now(), slog.LevelWarn, fmt.Sprintf("%s", msg), pcs[0])
 	r.Add(keyvals...)
 	l.l.Handler().Handle(context.Background(), r)
 }
 
 // Err logs a message at the error level
-func (l *L) Err(msg string, keyvals ...any) {
+func (l *L) Err(msg any, keyvals ...any) {
 	if !l.l.Enabled(context.Background(), slog.LevelError) {
 		return
 	}
 	var pcs [1]uintptr
 	runtime.Callers(2, pcs[:])
-	r := slog.NewRecord(time.Now(), slog.LevelError, msg, pcs[0])
+	r := slog.NewRecord(time.Now(), slog.LevelError, fmt.Sprintf("%s", msg), pcs[0])
 	r.Add(keyvals...)
 	l.l.Handler().Handle(context.Background(), r)
 }
 
 // Fatal logs a message at the fatal level and also exits the program by calling
 // os.Exit
-func (l *L) Fatal(msg string, keyvals ...any) {
+func (l *L) Fatal(msg any, keyvals ...any) {
 	if !l.l.Enabled(context.Background(), slog.LevelError) {
 		return
 	}
 	var pcs [1]uintptr
 	runtime.Callers(2, pcs[:])
-	r := slog.NewRecord(time.Now(), slog.LevelError, msg, pcs[0])
+	r := slog.NewRecord(time.Now(), slog.LevelError, fmt.Sprintf("%s", msg), pcs[0])
 	r.Add(keyvals...)
 	l.l.Handler().Handle(context.Background(), r)
 	os.Exit(1)

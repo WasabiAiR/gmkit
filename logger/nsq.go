@@ -5,7 +5,7 @@ import "log/slog"
 // NSQLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the go-nsq library
 type NSQLogger struct {
-	fn func(msg string, keyvals ...any)
+	fn func(msg any, keyvals ...any)
 }
 
 // NewNSQLogger initializes a new Logger
