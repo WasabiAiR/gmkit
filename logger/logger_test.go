@@ -21,12 +21,11 @@ func TestLogger(t *testing.T) {
 
 		require.Contains(t, buf.String(), "key1=value1")
 		require.Contains(t, buf.String(), "key2=value2")
-		require.Contains(t, buf.String(), "caller=github.com/graymeta/gmkit/logger/logger_test.go")
-		require.Contains(t, buf.String(), "ts="+fmt.Sprintf("%d", time.Now().Year()))
+		require.Contains(t, buf.String(), "logger/logger_test.go")
+		require.Contains(t, buf.String(), fmt.Sprintf("%d", time.Now().Year()))
 		require.Contains(t, buf.String(), "src=somelogger")
-		require.Contains(t, buf.String(), "level=info")
-		require.Contains(t, buf.String(), "msg=foo")
-
+		require.Contains(t, buf.String(), "INF")
+		require.Contains(t, buf.String(), "foo")
 	})
 
 	t.Run("check-level-filtering", func(t *testing.T) {
@@ -57,5 +56,16 @@ func TestLogger(t *testing.T) {
 		require.Contains(t, buf.String(), "key4=value4")
 		require.Contains(t, buf.String(), "key5=value5")
 		require.Contains(t, buf.String(), "src=somelogger.sublogger2")
+	})
+
+	t.Run("main logger after creating sublogger", func(t *testing.T) {
+		defer buf.Reset()
+
+		l.Info("main", "key1", "value1")
+
+		require.Contains(t, buf.String(), "key1=value1")
+		require.NotContains(t, buf.String(), "key4=value4")
+		require.NotContains(t, buf.String(), "key5=value5")
+		require.Contains(t, buf.String(), "src=somelogger")
 	})
 }

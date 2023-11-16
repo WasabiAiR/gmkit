@@ -1,27 +1,30 @@
 package metrics
 
 import (
+	"log/slog"
 	"time"
 
 	"github.com/graymeta/gmkit/logger"
-
+	"github.com/quipo/statsd"
 	"github.com/quipo/statsd/event"
 )
 
 // LoggingClient is a client that dumps stats to a Logger
 type LoggingClient struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg string, keyvals ...interface{})
 }
+
+var _ statsd.Statsd = (*LoggingClient)(nil)
 
 // NewLoggingClient creates a new logging client that will log to logger
 func NewLoggingClient(l *logger.L, level string) *LoggingClient {
 	client := &LoggingClient{}
 	switch logger.ParseLevel(level) {
-	case logger.Err:
+	case slog.LevelError:
 		client.fn = l.Err
-	case logger.Warn:
+	case slog.LevelWarn:
 		client.fn = l.Warn
-	case logger.Info:
+	case slog.LevelInfo:
 		client.fn = l.Info
 	default:
 		client.fn = l.Debug
@@ -46,57 +49,68 @@ func (c *LoggingClient) Close() error {
 
 // Incr logs an Incr operation
 func (c *LoggingClient) Incr(stat string, count int64) error {
-	return c.fn("Incr", stat, count)
+	c.fn("Incr", stat, count)
+	return nil
 }
 
 // Decr logs a Decr operation
 func (c *LoggingClient) Decr(stat string, count int64) error {
-	return c.fn("Decr", stat, count)
+	c.fn("Decr", stat, count)
+	return nil
 }
 
 // Timing logs a Timing operation
 func (c *LoggingClient) Timing(stat string, delta int64) error {
-	return c.fn("Timing", stat, delta)
+	c.fn("Timing", stat, delta)
+	return nil
 }
 
 // PrecisionTiming logs a PrecisionTiming operation
 func (c *LoggingClient) PrecisionTiming(stat string, delta time.Duration) error {
-	return c.fn("PrecisionTiming", stat, delta)
+	c.fn("PrecisionTiming", stat, delta)
+	return nil
 }
 
 // Gauge logs a Gauge operation
 func (c *LoggingClient) Gauge(stat string, value int64) error {
-	return c.fn("Gauge", stat, value)
+	c.fn("Gauge", stat, value)
+	return nil
 }
 
 // GaugeDelta logs a GaugeDelta operation
 func (c *LoggingClient) GaugeDelta(stat string, value int64) error {
-	return c.fn("GaugeDelta", stat, value)
+	c.fn("GaugeDelta", stat, value)
+	return nil
 }
 
 // Absolute logs a Absolute operation
 func (c *LoggingClient) Absolute(stat string, value int64) error {
-	return c.fn("Absolute", stat, value)
+	c.fn("Absolute", stat, value)
+	return nil
 }
 
 // Total logs a Total operation
 func (c *LoggingClient) Total(stat string, value int64) error {
-	return c.fn("Total", stat, value)
+	c.fn("Total", stat, value)
+	return nil
 }
 
 // FGauge logs a FGauge operation
 func (c *LoggingClient) FGauge(stat string, value float64) error {
-	return c.fn("Fguage", stat, value)
+	c.fn("Fguage", stat, value)
+	return nil
 }
 
 // FGaugeDelta logs a FGaugeDelta operation
 func (c *LoggingClient) FGaugeDelta(stat string, value float64) error {
-	return c.fn("FGaugeDelta", stat, value)
+	c.fn("FGaugeDelta", stat, value)
+	return nil
 }
 
 // FAbsolute logs a FAbsolute operation
 func (c *LoggingClient) FAbsolute(stat string, value float64) error {
-	return c.fn("FAbsolute", stat, value)
+	c.fn("FAbsolute", stat, value)
+	return nil
 }
 
 // SendEvents does nothing.

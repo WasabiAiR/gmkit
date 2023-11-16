@@ -1,20 +1,22 @@
 package logger
 
+import "log/slog"
+
 // NSQLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the go-nsq library
 type NSQLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg string, keyvals ...any)
 }
 
 // NewNSQLogger initializes a new Logger
 func NewNSQLogger(l *L, level string) *NSQLogger {
 	hl := &NSQLogger{}
 	switch ParseLevel(level) {
-	case Err:
+	case slog.LevelError:
 		hl.fn = l.Err
-	case Warn:
+	case slog.LevelWarn:
 		hl.fn = l.Warn
-	case Info:
+	case slog.LevelInfo:
 		hl.fn = l.Info
 	default:
 		hl.fn = l.Debug
@@ -24,5 +26,6 @@ func NewNSQLogger(l *L, level string) *NSQLogger {
 
 // Output writes the message to our logger
 func (l *NSQLogger) Output(calldepth int, s string) error {
-	return l.fn(s)
+	l.fn(s)
+	return nil
 }

@@ -1,22 +1,25 @@
 package logger
 
-import "fmt"
+import (
+	"fmt"
+	"log/slog"
+)
 
 // StripeLogger is a thin wrapper around our the Logger that bends it to
 // the interface uses by the stripe library
 type StripeLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg string, keyvals ...any)
 }
 
 // NewStripeLogger initializes a new Logger
 func NewStripeLogger(l *L, level string) *StripeLogger {
 	sl := &StripeLogger{}
 	switch ParseLevel(level) {
-	case Err:
+	case slog.LevelError:
 		sl.fn = l.Err
-	case Warn:
+	case slog.LevelDebug:
 		sl.fn = l.Warn
-	case Info:
+	case slog.LevelInfo:
 		sl.fn = l.Info
 	default:
 		sl.fn = l.Debug

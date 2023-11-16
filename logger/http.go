@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 // HTTPLogger wraps a L and satisfys the interface required by
 // https://godoc.org/github.com/ernesto-jimenez/httplogger#HTTPLogger
 type HTTPLogger struct {
-	fn func(msg interface{}, keyvals ...interface{}) error
+	fn func(msg string, keyvals ...any)
 }
 
 var _ httplogger.HTTPLogger = (*HTTPLogger)(nil)
@@ -20,14 +21,14 @@ var _ httplogger.HTTPLogger = (*HTTPLogger)(nil)
 func NewHTTPLogger(l *L, level string) *HTTPLogger {
 	hl := &HTTPLogger{}
 	switch ParseLevel(level) {
-	case Err:
-		hl.fn = l.Err
-	case Warn:
-		hl.fn = l.Warn
-	case Info:
-		hl.fn = l.Info
+	case slog.LevelError:
+		hl.fn = l.l.Error
+	case slog.LevelWarn:
+		hl.fn = l.l.Warn
+	case slog.LevelInfo:
+		hl.fn = l.l.Info
 	default:
-		hl.fn = l.Debug
+		hl.fn = l.l.Debug
 	}
 	return hl
 }
